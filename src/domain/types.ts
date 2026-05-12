@@ -15,6 +15,11 @@ export type Rect = {
   height: number;
 };
 
+export type Point = {
+  x: number;
+  y: number;
+};
+
 export type ProductView = {
   id: 'front';
   name: string;
@@ -41,7 +46,11 @@ export type Product = {
     frame: 'curtain' | 'mat';
     background: string;
     baseImage?: string;
+    textureImage?: string;
     textureArea?: Rect;
+    texturePolygon?: Point[];
+    textureBlendMode?: 'source-over' | 'multiply' | 'screen' | 'overlay' | 'soft-light';
+    textureOpacity?: number;
   };
 };
 

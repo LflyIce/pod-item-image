@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
+import type { SceneContext } from 'konva/lib/Context';
 import {
   ArrowUp,
   Download,
@@ -485,9 +486,25 @@ function KonvaEditor({
 function ProductPreview({ product, layers }: { product: Product; layers: DesignLayer[] }) {
   const view = product.views[0];
   const baseImage = useImageElement(product.mockup.baseImage);
+  const textureImage = useImageElement(product.mockup.textureImage);
   const textureArea = product.mockup.textureArea ?? view.printArea;
+  const texturePolygon = product.mockup.texturePolygon;
+  const textureBlendMode = product.mockup.textureBlendMode ?? 'source-over';
+  const textureOpacity = product.mockup.textureOpacity ?? 0.38;
   const scaleX = textureArea.width / view.printArea.width;
   const scaleY = textureArea.height / view.printArea.height;
+  const clipFunc = (context: SceneContext) => {
+    if (texturePolygon && texturePolygon.length >= 3) {
+      context.beginPath();
+      context.moveTo(texturePolygon[0].x, texturePolygon[0].y);
+      for (const point of texturePolygon.slice(1)) {
+        context.lineTo(point.x, point.y);
+      }
+      context.closePath();
+      return;
+    }
+    context.rect(textureArea.x, textureArea.y, textureArea.width, textureArea.height);
+  };
 
   return (
     <div className="effect-canvas">
@@ -495,7 +512,7 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
         <Layer>
           <Rect width={500} height={500} fill="#f1f5f9" />
           {baseImage ? <KonvaImage image={baseImage} width={500} height={500} listening={false} /> : null}
-          <Group clipX={textureArea.x} clipY={textureArea.y} clipWidth={textureArea.width} clipHeight={textureArea.height} listening={false}>
+          <Group clipFunc={clipFunc} listening={false}>
             {layers.map((layer) => (
               <MappedPreviewLayer
                 key={layer.id}
@@ -508,6 +525,16 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
                 scaleY={scaleY}
               />
             ))}
+            {textureImage ? (
+              <KonvaImage
+                image={textureImage}
+                width={500}
+                height={500}
+                opacity={textureOpacity}
+                globalCompositeOperation={textureBlendMode}
+                listening={false}
+              />
+            ) : null}
             <Rect
               x={textureArea.x}
               y={textureArea.y}
@@ -516,7 +543,7 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
               fillLinearGradientStartPoint={{ x: textureArea.x, y: textureArea.y }}
               fillLinearGradientEndPoint={{ x: textureArea.x + textureArea.width, y: textureArea.y }}
               fillLinearGradientColorStops={[0, 'rgba(0,0,0,.3)', 0.22, 'rgba(255,255,255,.2)', 0.52, 'rgba(0,0,0,.16)', 0.75, 'rgba(255,255,255,.2)', 1, 'rgba(0,0,0,.28)']}
-              opacity={0.18}
+              opacity={textureImage ? 0.04 : 0.18}
             />
           </Group>
         </Layer>

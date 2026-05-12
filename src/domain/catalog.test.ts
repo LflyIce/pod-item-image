@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { existsSync } from 'node:fs';
 import { getProductById, PRODUCTS } from './catalog';
 
 describe('product catalog', () => {
@@ -25,7 +26,18 @@ describe('product catalog', () => {
     const product = getProductById('door-curtain');
 
     expect(product.mockup.baseImage).toBe('/assets/door-curtain-base.png');
-    expect(product.mockup.textureArea).toEqual({ x: 232, y: 146, width: 78, height: 218 });
+    expect(product.mockup.textureArea).toEqual({ x: 154, y: 146, width: 142, height: 232 });
+    expect(product.mockup.texturePolygon).toEqual([
+      { x: 154, y: 146 },
+      { x: 296, y: 146 },
+      { x: 294, y: 378 },
+      { x: 158, y: 378 }
+    ]);
+    expect(product.mockup.textureImage).toBe('/assets/door-curtain-folds.png');
+    expect(product.mockup.textureBlendMode).toBe('source-over');
+    expect(product.mockup.textureOpacity).toBeGreaterThan(0.75);
+    expect(product.mockup.textureOpacity).toBeLessThanOrEqual(1);
+    expect(existsSync('public/assets/door-curtain-folds.png')).toBe(true);
   });
 
   it('looks products up by id and throws for unsupported product ids', () => {

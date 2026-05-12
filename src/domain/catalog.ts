@@ -24,7 +24,16 @@ export const PRODUCTS: Product[] = [
       frame: 'curtain',
       background: 'linear-gradient(135deg, #eef2ff 0%, #f8fafc 44%, #e0f2fe 100%)',
       baseImage: '/assets/door-curtain-base.png',
-      textureArea: { x: 232, y: 146, width: 78, height: 218 }
+      textureImage: '/assets/door-curtain-folds.png',
+      textureArea: { x: 154, y: 146, width: 142, height: 232 },
+      texturePolygon: [
+        { x: 154, y: 146 },
+        { x: 296, y: 146 },
+        { x: 294, y: 378 },
+        { x: 158, y: 378 }
+      ],
+      textureBlendMode: 'source-over',
+      textureOpacity: 0.92
     }
   },
   {
