@@ -46,6 +46,13 @@ export type Product = {
     frame: 'curtain' | 'mat';
     background: string;
     baseImage?: string;
+    maskImage?: string;
+    shadowImage?: string;
+    shadowOpacity?: number;
+    highlightImage?: string;
+    highlightOpacity?: number;
+    normalImage?: string;
+    normalStrength?: number;
     textureImage?: string;
     textureArea?: Rect;
     texturePolygon?: Point[];
@@ -56,6 +63,10 @@ export type Product = {
       src: Point[];  // 4 corners of the source (editor print area) – usually a rectangle
       dst: Point[];  // 4 corners on the product base image – may be a non-rectangular quad
     };
+    warpPanels?: Array<{
+      source: Rect;
+      dst: Point[];
+    }>;
   };
 };
 

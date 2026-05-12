@@ -24,16 +24,23 @@ export const PRODUCTS: Product[] = [
       frame: 'curtain',
       background: 'linear-gradient(135deg, #eef2ff 0%, #f8fafc 44%, #e0f2fe 100%)',
       baseImage: '/assets/door-curtain-base.png',
+      maskImage: '/assets/curtain-mask.png',
+      shadowImage: '/assets/door-curtain-shadow.png',
+      shadowOpacity: 0.26,
+      highlightImage: '/assets/door-curtain-highlight.png',
+      highlightOpacity: 0.2,
+      normalImage: '/assets/door-curtain-normal.png',
+      normalStrength: 0.16,
       textureImage: '/assets/door-curtain-folds.png',
-      textureArea: { x: 108, y: 62, width: 284, height: 426 },
+      textureArea: { x: 154, y: 143, width: 156, height: 259 },
       texturePolygon: [
-        { x: 108, y: 62 },
-        { x: 392, y: 62 },
-        { x: 392, y: 488 },
-        { x: 108, y: 488 }
+        { x: 154, y: 147 },
+        { x: 310, y: 143 },
+        { x: 310, y: 402 },
+        { x: 156, y: 400 }
       ],
-      textureBlendMode: 'source-over',
-      textureOpacity: 0.92,
+      textureBlendMode: 'soft-light',
+      textureOpacity: 0.32,
       warpPoints: {
         src: [
           { x: 0, y: 0 },
@@ -42,12 +49,32 @@ export const PRODUCTS: Product[] = [
           { x: 0, y: 1 }
         ],
         dst: [
-          { x: 108, y: 62 },
-          { x: 392, y: 62 },
-          { x: 392, y: 488 },
-          { x: 108, y: 488 }
+          { x: 154, y: 147 },
+          { x: 310, y: 143 },
+          { x: 310, y: 402 },
+          { x: 156, y: 400 }
         ]
-      }
+      },
+      warpPanels: [
+        {
+          source: { x: 0, y: 0, width: 0.5, height: 1 },
+          dst: [
+            { x: 154, y: 147 },
+            { x: 234, y: 145 },
+            { x: 235, y: 402 },
+            { x: 156, y: 400 }
+          ]
+        },
+        {
+          source: { x: 0.5, y: 0, width: 0.5, height: 1 },
+          dst: [
+            { x: 234, y: 145 },
+            { x: 310, y: 143 },
+            { x: 310, y: 402 },
+            { x: 235, y: 402 }
+          ]
+        }
+      ]
     }
   },
   {

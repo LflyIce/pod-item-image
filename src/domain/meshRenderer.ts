@@ -143,7 +143,7 @@ export class WarpMesh {
       ctx.closePath();
       ctx.clip();
       ctx.setTransform(a, b, c, d, e, f);
-      ctx.drawImage(sourceImage, 0, 0);
+      ctx.drawImage(sourceImage, -0.5, -0.5, imgW + 1, imgH + 1);
       ctx.restore();
     }
 

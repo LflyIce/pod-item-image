@@ -16,4 +16,16 @@ npm install
 npm run dev
 npm test
 npm run build
+npm run analyze:mockup
 ```
+
+## Mockup asset pipeline
+
+The preview compositor consumes precomputed product-surface assets:
+
+- `maskImage` limits replacement to the printable surface.
+- `shadowImage` and `highlightImage` preserve folds, shadows, and highlights.
+- `normalImage` is reserved for displacement/normal-map shading.
+- `warpPoints` drive perspective transform before Konva renders the preview image.
+
+Install backend dependencies with `pip install -r backend/requirements.txt`, then run `npm run analyze:mockup` to regenerate the door-curtain assets.

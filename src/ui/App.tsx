@@ -21,6 +21,9 @@ import { Group, Image as KonvaImage, Layer, Rect, Stage, Text as KonvaText, Tran
 import { getProductById, getVariant } from '../domain/catalog';
 import { PerspectiveTransform } from '../domain/perspectiveTransform';
 import { WarpMesh } from '../domain/meshRenderer';
+import { axisAlignedRectFromQuad } from '../domain/mockupGeometry';
+import { normalOffset } from '../domain/normalDisplacement';
+import { shouldRenderSurfaceEffects } from '../domain/previewCompositing';
 import {
   applyTemplate,
   createBlankProject,
@@ -489,13 +492,19 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   const view = product.views[0];
   const baseImage = useImageElement(product.mockup.baseImage);
   const textureImage = useImageElement(product.mockup.textureImage);
-  const maskImage = useImageElement('/assets/curtain-mask.png');
-  const lightingImage = useImageElement('/assets/curtain-lighting.png');
+  const maskImage = useImageElement(product.mockup.maskImage);
+  const shadowImage = useImageElement(product.mockup.shadowImage);
+  const highlightImage = useImageElement(product.mockup.highlightImage);
+  const normalImage = useImageElement(product.mockup.normalImage);
   const textureArea = product.mockup.textureArea ?? view.printArea;
   const texturePolygon = product.mockup.texturePolygon;
   const textureBlendMode = product.mockup.textureBlendMode ?? 'source-over';
   const textureOpacity = product.mockup.textureOpacity ?? 0.38;
+  const shadowOpacity = product.mockup.shadowOpacity ?? 0.24;
+  const highlightOpacity = product.mockup.highlightOpacity ?? 0.18;
+  const normalStrength = product.mockup.normalStrength ?? 0.14;
   const warpPoints = product.mockup.warpPoints;
+  const renderSurfaceEffects = shouldRenderSurfaceEffects(layers);
 
   const layersJson = useMemo(() => JSON.stringify(layers.map(l => ({
     id: l.id, type: l.type, x: l.x, y: l.y, width: l.width, height: l.height,
@@ -589,15 +598,22 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     warpedCanvas.height = PVH;
     const wCtx = warpedCanvas.getContext('2d')!;
 
-    const srcFlat = warpPoints.src.flatMap((p) => [p.x * srcW, p.y * srcH]);
-    const dstFlat = warpPoints.dst.flatMap((p) => [p.x, p.y]);
-    try {
-      const transform = new PerspectiveTransform(srcFlat, dstFlat);
-      const mesh = WarpMesh.create(srcW, srcH, PVW, PVH, transform, 16, 16);
-      mesh.render(wCtx, designCanvas, srcW, srcH);
-    } catch {
-      const d = warpPoints.dst;
-      wCtx.drawImage(designCanvas, d[0].x, d[0].y, d[2].x - d[0].x, d[2].y - d[0].y);
+    if (product.mockup.warpPanels?.length) {
+      for (const panel of product.mockup.warpPanels) {
+        const panelSource = document.createElement('canvas');
+        const sx = panel.source.x * srcW;
+        const sy = panel.source.y * srcH;
+        const sw = panel.source.width * srcW;
+        const sh = panel.source.height * srcH;
+        panelSource.width = Math.max(1, Math.round(sw));
+        panelSource.height = Math.max(1, Math.round(sh));
+        const panelContext = panelSource.getContext('2d');
+        if (!panelContext) continue;
+        panelContext.drawImage(designCanvas, sx, sy, sw, sh, 0, 0, panelSource.width, panelSource.height);
+        renderWarpedCanvas(wCtx, panelSource, panelSource.width, panelSource.height, panel.dst, PVW, PVH);
+      }
+    } else {
+      renderWarpedCanvas(wCtx, designCanvas, srcW, srcH, warpPoints.dst, PVW, PVH);
     }
 
     // Step 3: Apply mask — only keep pixels inside the curtain area
@@ -607,14 +623,27 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
       wCtx.globalCompositeOperation = 'source-over';
     }
 
-    // Step 4: Apply lighting fusion — multiply folds onto the warped design
-    if (lightingImage) {
-      wCtx.globalCompositeOperation = 'multiply';
-      wCtx.drawImage(lightingImage, 0, 0, PVW, PVH);
-      wCtx.globalCompositeOperation = 'source-over';
+    if (renderSurfaceEffects && normalImage) {
+      applyNormalDisplacement(wCtx, normalImage, PVW, PVH, normalStrength);
     }
 
-    // Step 5: Composite everything onto final canvas
+    if (renderSurfaceEffects && shadowImage) {
+      wCtx.save();
+      wCtx.globalAlpha = shadowOpacity;
+      wCtx.globalCompositeOperation = 'multiply';
+      wCtx.drawImage(shadowImage, 0, 0, PVW, PVH);
+      wCtx.restore();
+    }
+
+    if (renderSurfaceEffects && highlightImage) {
+      wCtx.save();
+      wCtx.globalAlpha = highlightOpacity;
+      wCtx.globalCompositeOperation = 'screen';
+      wCtx.drawImage(highlightImage, 0, 0, PVW, PVH);
+      wCtx.restore();
+    }
+
+    // Step 4: Composite everything onto final canvas
     const canvas = document.createElement('canvas');
     canvas.width = PVW;
     canvas.height = PVH;
@@ -632,8 +661,8 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     // Overlay the warped design with mask + lighting
     ctx.drawImage(warpedCanvas, 0, 0);
 
-    // Step 6: Add fold overlay for extra realism (screen blend)
-    if (textureImage) {
+    // Step 5: Add transparent fold lighting for extra realism
+    if (renderSurfaceEffects && textureImage) {
       ctx.save();
       if (texturePolygon && texturePolygon.length >= 3) {
         ctx.beginPath();
@@ -644,16 +673,18 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
         ctx.closePath();
         ctx.clip();
       }
-      ctx.globalAlpha = 0.5;
-      ctx.globalCompositeOperation = 'overlay';
+      ctx.globalAlpha = textureOpacity;
+      ctx.globalCompositeOperation = textureBlendMode;
       ctx.drawImage(textureImage, 0, 0, PVW, PVH);
       ctx.restore();
     }
 
     setPreviewDataUrl(canvas.toDataURL());
   }, [
-    layersJson, loadCount, baseImage, textureImage, maskImage, lightingImage, warpPoints,
-    texturePolygon, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
+    layersJson, loadCount, baseImage, textureImage, maskImage, shadowImage, highlightImage, normalImage,
+    textureBlendMode, textureOpacity, shadowOpacity, highlightOpacity, normalStrength, warpPoints,
+    product.mockup.warpPanels,
+    renderSurfaceEffects, texturePolygon, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
     allImagesReady, imageLayers.length
   ]);
 
@@ -693,7 +724,7 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
                   scaleY={scaleY}
                 />
               ))}
-              {textureImage ? (
+              {renderSurfaceEffects && textureImage ? (
                 <KonvaImage
                   image={textureImage}
                   width={500}
@@ -711,7 +742,7 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
                 fillLinearGradientStartPoint={{ x: textureArea.x, y: textureArea.y }}
                 fillLinearGradientEndPoint={{ x: textureArea.x + textureArea.width, y: textureArea.y }}
                 fillLinearGradientColorStops={[0, 'rgba(0,0,0,.3)', 0.22, 'rgba(255,255,255,.2)', 0.52, 'rgba(0,0,0,.16)', 0.75, 'rgba(255,255,255,.2)', 1, 'rgba(0,0,0,.28)']}
-                opacity={textureImage ? 0.04 : 0.18}
+                opacity={renderSurfaceEffects && textureImage ? 0.04 : 0.18}
               />
             </Group>
           </Layer>
@@ -738,6 +769,73 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
       </Stage>
     </div>
   );
+}
+
+function applyNormalDisplacement(
+  context: CanvasRenderingContext2D,
+  normalImage: HTMLImageElement,
+  width: number,
+  height: number,
+  strength: number
+) {
+  const source = context.getImageData(0, 0, width, height);
+  const normalCanvas = document.createElement('canvas');
+  normalCanvas.width = width;
+  normalCanvas.height = height;
+  const normalContext = normalCanvas.getContext('2d');
+  if (!normalContext) return;
+  normalContext.drawImage(normalImage, 0, 0, width, height);
+  const normal = normalContext.getImageData(0, 0, width, height);
+  const displaced = context.createImageData(width, height);
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = (y * width + x) * 4;
+      const alpha = source.data[index + 3];
+      if (alpha === 0 || normal.data[index + 3] === 0) {
+        displaced.data[index + 3] = alpha;
+        continue;
+      }
+      const offset = normalOffset(normal.data[index], normal.data[index + 1], strength * 4);
+      const sx = Math.max(0, Math.min(width - 1, Math.round(x - offset.x)));
+      const sy = Math.max(0, Math.min(height - 1, Math.round(y - offset.y)));
+      const sourceIndex = (sy * width + sx) * 4;
+      displaced.data[index] = source.data[sourceIndex];
+      displaced.data[index + 1] = source.data[sourceIndex + 1];
+      displaced.data[index + 2] = source.data[sourceIndex + 2];
+      displaced.data[index + 3] = source.data[sourceIndex + 3];
+    }
+  }
+
+  context.putImageData(displaced, 0, 0);
+}
+
+function renderWarpedCanvas(
+  context: CanvasRenderingContext2D,
+  source: HTMLCanvasElement,
+  sourceWidth: number,
+  sourceHeight: number,
+  destination: Array<{ x: number; y: number }>,
+  previewWidth: number,
+  previewHeight: number
+) {
+  const directRect = axisAlignedRectFromQuad(destination);
+  if (directRect) {
+    context.drawImage(source, directRect.x, directRect.y, directRect.width, directRect.height);
+    return;
+  }
+
+  try {
+    const transform = new PerspectiveTransform(
+      [0, 0, sourceWidth, 0, sourceWidth, sourceHeight, 0, sourceHeight],
+      destination.flatMap((point) => [point.x, point.y])
+    );
+    const mesh = WarpMesh.create(sourceWidth, sourceHeight, previewWidth, previewHeight, transform, 18, 28);
+    mesh.render(context, source, sourceWidth, sourceHeight);
+  } catch {
+    const fallback = destination;
+    context.drawImage(source, fallback[0].x, fallback[0].y, fallback[2].x - fallback[0].x, fallback[2].y - fallback[0].y);
+  }
 }
 
 function EditableLayer({

@@ -7,7 +7,8 @@
     "dev": "vite --host 127.0.0.1",
     "build": "tsc -b && vite build",
     "test": "vitest run",
-    "preview": "vite preview --host 127.0.0.1"
+    "preview": "vite preview --host 127.0.0.1",
+    "analyze:mockup": "python backend/mockup_analyzer.py --base public/assets/door-curtain-base.png --out public/assets --prefix door-curtain --box 154 143 310 402 --mask-name curtain-mask.png"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.1",
