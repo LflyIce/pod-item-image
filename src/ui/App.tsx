@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { Group, Image as KonvaImage, Layer, Rect, Stage, Text as KonvaText, Transformer } from 'react-konva';
 import { getProductById, getVariant } from '../domain/catalog';
+import { PerspectiveTransform } from '../domain/perspectiveTransform';
+import { WarpMesh } from '../domain/meshRenderer';
 import {
   applyTemplate,
   createBlankProject,
@@ -465,7 +467,7 @@ function KonvaEditor({
       <Stage width={view.canvas.width} height={view.canvas.height} onMouseDown={(event) => event.target === event.target.getStage() && onSelect(null)}>
         <Layer>
           <Rect width={view.canvas.width} height={view.canvas.height} fill="#ffffff" shadowBlur={18} shadowColor="rgba(15,23,42,.12)" />
-          <Rect x={view.printArea.x} y={view.printArea.y} width={view.printArea.width} height={view.printArea.height} stroke="#b6c0cf" dash={[4, 4]} />
+
           {layers.map((layer) => (
             <EditableLayer
               key={layer.id}
@@ -487,65 +489,251 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   const view = product.views[0];
   const baseImage = useImageElement(product.mockup.baseImage);
   const textureImage = useImageElement(product.mockup.textureImage);
+  const maskImage = useImageElement('/assets/curtain-mask.png');
+  const lightingImage = useImageElement('/assets/curtain-lighting.png');
   const textureArea = product.mockup.textureArea ?? view.printArea;
   const texturePolygon = product.mockup.texturePolygon;
   const textureBlendMode = product.mockup.textureBlendMode ?? 'source-over';
   const textureOpacity = product.mockup.textureOpacity ?? 0.38;
-  const scaleX = textureArea.width / view.printArea.width;
-  const scaleY = textureArea.height / view.printArea.height;
-  const clipFunc = (context: SceneContext) => {
-    if (texturePolygon && texturePolygon.length >= 3) {
-      context.beginPath();
-      context.moveTo(texturePolygon[0].x, texturePolygon[0].y);
-      for (const point of texturePolygon.slice(1)) {
-        context.lineTo(point.x, point.y);
-      }
-      context.closePath();
-      return;
-    }
-    context.rect(textureArea.x, textureArea.y, textureArea.width, textureArea.height);
-  };
+  const warpPoints = product.mockup.warpPoints;
 
+  const layersJson = useMemo(() => JSON.stringify(layers.map(l => ({
+    id: l.id, type: l.type, x: l.x, y: l.y, width: l.width, height: l.height,
+    rotation: l.rotation, scale: l.scale, opacity: l.opacity, zIndex: l.zIndex,
+    assetUrl: l.type === 'image' ? l.assetUrl : undefined,
+    tileMode: l.type === 'image' ? l.tileMode : undefined,
+    text: l.type === 'text' ? l.text : undefined,
+    fontSize: l.type === 'text' ? l.fontSize : undefined,
+    fontFamily: l.type === 'text' ? l.fontFamily : undefined,
+    fill: l.type === 'text' ? l.fill : undefined,
+    fontWeight: l.type === 'text' ? l.fontWeight : undefined,
+  }))), [layers]);
+
+  const [previewDataUrl, setPreviewDataUrl] = useState<string>('');
+  const previewImage = useImageElement(previewDataUrl || undefined);
+
+  const [loadCount, setLoadCount] = useState(0);
+  const loadedImages = useRef<Map<string, HTMLImageElement>>(new Map());
+  const imageLayers = layers.filter((l): l is ImageLayer => l.type === 'image');
+
+  useEffect(() => {
+    let changed = false;
+    const currentIds = new Set(imageLayers.map(l => l.id));
+    for (const key of loadedImages.current.keys()) {
+      if (!currentIds.has(key)) { loadedImages.current.delete(key); changed = true; }
+    }
+    for (const layer of imageLayers) {
+      if (!loadedImages.current.has(layer.id) || loadedImages.current.get(layer.id)!.src !== layer.assetUrl) {
+        changed = true;
+        const img = new window.Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => { setLoadCount(c => c + 1); };
+        img.src = layer.assetUrl;
+        loadedImages.current.set(layer.id, img);
+      }
+    }
+    if (changed) setLoadCount(c => c + 1);
+  }, [imageLayers.map(l => l.id).join(','), imageLayers.map(l => l.assetUrl).join(',')]);
+
+  const allImagesReady = imageLayers.every(l => {
+    const img = loadedImages.current.get(l.id);
+    return img && img.complete && img.naturalWidth > 0;
+  });
+
+  // ===== Rendering Pipeline: SAM2 mask + Perspective Warp + Lighting Fusion =====
+  useEffect(() => {
+    if (!warpPoints || warpPoints.src.length !== 4 || warpPoints.dst.length !== 4) return;
+    if (!baseImage && product.mockup.baseImage) return;
+    if (!allImagesReady && imageLayers.length > 0) return;
+
+    const PVW = 500;
+    const PVH = 500;
+    const srcW = view.printArea.width;
+    const srcH = view.printArea.height;
+
+    // Step 1: Render design layers to offscreen canvas
+    const designCanvas = document.createElement('canvas');
+    designCanvas.width = srcW;
+    designCanvas.height = srcH;
+    const dCtx = designCanvas.getContext('2d')!;
+
+    const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
+    for (const layer of sorted) {
+      dCtx.save();
+      dCtx.globalAlpha = layer.opacity;
+      const lx = layer.x - view.printArea.x;
+      const ly = layer.y - view.printArea.y;
+      const cx = lx + layer.width / 2;
+      const cy = ly + layer.height / 2;
+      dCtx.translate(cx, cy);
+      dCtx.rotate((layer.rotation * Math.PI) / 180);
+      dCtx.scale(layer.scale, layer.scale);
+      if (layer.type === 'image') {
+        const img = loadedImages.current.get(layer.id);
+        if (img && img.complete && img.naturalWidth > 0) {
+          dCtx.drawImage(img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
+        }
+      } else if (layer.type === 'text') {
+        dCtx.font = `${layer.fontWeight === '700' ? 'bold' : 'normal'} ${layer.fontSize}px ${layer.fontFamily}`;
+        dCtx.fillStyle = layer.fill;
+        dCtx.textAlign = 'center';
+        dCtx.textBaseline = 'middle';
+        dCtx.fillText(layer.text, 0, 0);
+      }
+      dCtx.restore();
+    }
+
+    // Step 2: Warp design onto product area using perspective transform
+    const warpedCanvas = document.createElement('canvas');
+    warpedCanvas.width = PVW;
+    warpedCanvas.height = PVH;
+    const wCtx = warpedCanvas.getContext('2d')!;
+
+    const srcFlat = warpPoints.src.flatMap((p) => [p.x * srcW, p.y * srcH]);
+    const dstFlat = warpPoints.dst.flatMap((p) => [p.x, p.y]);
+    try {
+      const transform = new PerspectiveTransform(srcFlat, dstFlat);
+      const mesh = WarpMesh.create(srcW, srcH, PVW, PVH, transform, 16, 16);
+      mesh.render(wCtx, designCanvas, srcW, srcH);
+    } catch {
+      const d = warpPoints.dst;
+      wCtx.drawImage(designCanvas, d[0].x, d[0].y, d[2].x - d[0].x, d[2].y - d[0].y);
+    }
+
+    // Step 3: Apply mask — only keep pixels inside the curtain area
+    if (maskImage) {
+      wCtx.globalCompositeOperation = 'destination-in';
+      wCtx.drawImage(maskImage, 0, 0, PVW, PVH);
+      wCtx.globalCompositeOperation = 'source-over';
+    }
+
+    // Step 4: Apply lighting fusion — multiply folds onto the warped design
+    if (lightingImage) {
+      wCtx.globalCompositeOperation = 'multiply';
+      wCtx.drawImage(lightingImage, 0, 0, PVW, PVH);
+      wCtx.globalCompositeOperation = 'source-over';
+    }
+
+    // Step 5: Composite everything onto final canvas
+    const canvas = document.createElement('canvas');
+    canvas.width = PVW;
+    canvas.height = PVH;
+    const ctx = canvas.getContext('2d')!;
+
+    // Background
+    ctx.fillStyle = '#f1f5f9';
+    ctx.fillRect(0, 0, PVW, PVH);
+
+    // Base product image (frame + empty curtain)
+    if (baseImage) {
+      ctx.drawImage(baseImage, 0, 0, PVW, PVH);
+    }
+
+    // Overlay the warped design with mask + lighting
+    ctx.drawImage(warpedCanvas, 0, 0);
+
+    // Step 6: Add fold overlay for extra realism (screen blend)
+    if (textureImage) {
+      ctx.save();
+      if (texturePolygon && texturePolygon.length >= 3) {
+        ctx.beginPath();
+        ctx.moveTo(texturePolygon[0].x, texturePolygon[0].y);
+        for (const point of texturePolygon.slice(1)) {
+          ctx.lineTo(point.x, point.y);
+        }
+        ctx.closePath();
+        ctx.clip();
+      }
+      ctx.globalAlpha = 0.5;
+      ctx.globalCompositeOperation = 'overlay';
+      ctx.drawImage(textureImage, 0, 0, PVW, PVH);
+      ctx.restore();
+    }
+
+    setPreviewDataUrl(canvas.toDataURL());
+  }, [
+    layersJson, loadCount, baseImage, textureImage, maskImage, lightingImage, warpPoints,
+    texturePolygon, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
+    allImagesReady, imageLayers.length
+  ]);
+
+  // If warp is not configured, fall back to Konva rendering
+  if (!warpPoints) {
+    const scaleX = textureArea.width / view.printArea.width;
+    const scaleY = textureArea.height / view.printArea.height;
+    const clipFunc = (context: SceneContext) => {
+      if (texturePolygon && texturePolygon.length >= 3) {
+        context.beginPath();
+        context.moveTo(texturePolygon[0].x, texturePolygon[0].y);
+        for (const point of texturePolygon.slice(1)) {
+          context.lineTo(point.x, point.y);
+        }
+        context.closePath();
+        return;
+      }
+      context.rect(textureArea.x, textureArea.y, textureArea.width, textureArea.height);
+    };
+
+    return (
+      <div className="effect-canvas">
+        <Stage width={500} height={500}>
+          <Layer>
+            <Rect width={500} height={500} fill="#f1f5f9" />
+            {baseImage ? <KonvaImage image={baseImage} width={500} height={500} listening={false} /> : null}
+            <Group clipFunc={clipFunc} listening={false}>
+              {layers.map((layer) => (
+                <MappedPreviewLayer
+                  key={layer.id}
+                  layer={layer}
+                  originX={view.printArea.x}
+                  originY={view.printArea.y}
+                  targetX={textureArea.x}
+                  targetY={textureArea.y}
+                  scaleX={scaleX}
+                  scaleY={scaleY}
+                />
+              ))}
+              {textureImage ? (
+                <KonvaImage
+                  image={textureImage}
+                  width={500}
+                  height={500}
+                  opacity={textureOpacity}
+                  globalCompositeOperation={textureBlendMode}
+                  listening={false}
+                />
+              ) : null}
+              <Rect
+                x={textureArea.x}
+                y={textureArea.y}
+                width={textureArea.width}
+                height={textureArea.height}
+                fillLinearGradientStartPoint={{ x: textureArea.x, y: textureArea.y }}
+                fillLinearGradientEndPoint={{ x: textureArea.x + textureArea.width, y: textureArea.y }}
+                fillLinearGradientColorStops={[0, 'rgba(0,0,0,.3)', 0.22, 'rgba(255,255,255,.2)', 0.52, 'rgba(0,0,0,.16)', 0.75, 'rgba(255,255,255,.2)', 1, 'rgba(0,0,0,.28)']}
+                opacity={textureImage ? 0.04 : 0.18}
+              />
+            </Group>
+          </Layer>
+        </Stage>
+      </div>
+    );
+  }
+
+  // Warp mode: render via composited canvas image
   return (
     <div className="effect-canvas">
       <Stage width={500} height={500}>
         <Layer>
           <Rect width={500} height={500} fill="#f1f5f9" />
-          {baseImage ? <KonvaImage image={baseImage} width={500} height={500} listening={false} /> : null}
-          <Group clipFunc={clipFunc} listening={false}>
-            {layers.map((layer) => (
-              <MappedPreviewLayer
-                key={layer.id}
-                layer={layer}
-                originX={view.printArea.x}
-                originY={view.printArea.y}
-                targetX={textureArea.x}
-                targetY={textureArea.y}
-                scaleX={scaleX}
-                scaleY={scaleY}
-              />
-            ))}
-            {textureImage ? (
-              <KonvaImage
-                image={textureImage}
-                width={500}
-                height={500}
-                opacity={textureOpacity}
-                globalCompositeOperation={textureBlendMode}
-                listening={false}
-              />
-            ) : null}
-            <Rect
-              x={textureArea.x}
-              y={textureArea.y}
-              width={textureArea.width}
-              height={textureArea.height}
-              fillLinearGradientStartPoint={{ x: textureArea.x, y: textureArea.y }}
-              fillLinearGradientEndPoint={{ x: textureArea.x + textureArea.width, y: textureArea.y }}
-              fillLinearGradientColorStops={[0, 'rgba(0,0,0,.3)', 0.22, 'rgba(255,255,255,.2)', 0.52, 'rgba(0,0,0,.16)', 0.75, 'rgba(255,255,255,.2)', 1, 'rgba(0,0,0,.28)']}
-              opacity={textureImage ? 0.04 : 0.18}
+          {previewImage ? (
+            <KonvaImage
+              image={previewImage}
+              width={500}
+              height={500}
+              listening={false}
             />
-          </Group>
+          ) : null}
         </Layer>
       </Stage>
     </div>
