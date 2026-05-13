@@ -39,7 +39,6 @@ describe('product catalog', () => {
     expect(product.mockup.textureOpacity).toBeLessThanOrEqual(0.45);
     expect(existsSync('public/assets/door-curtain-folds.png')).toBe(true);
     expect(product.mockup.maskImage).toBe('/assets/curtain-mask.png');
-    expect(product.mockup.shadowImage).toBe('/assets/door-curtain-shadow.png');
     expect(product.mockup.highlightImage).toBe('/assets/door-curtain-highlight.png');
     expect(product.mockup.normalImage).toBe('/assets/door-curtain-normal.png');
     expect(product.mockup.warpPoints?.dst).toEqual(product.mockup.texturePolygon);
@@ -64,7 +63,6 @@ describe('product catalog', () => {
       }
     ]);
     expect(existsSync('public/assets/curtain-mask.png')).toBe(true);
-    expect(existsSync('public/assets/door-curtain-shadow.png')).toBe(true);
     expect(existsSync('public/assets/door-curtain-highlight.png')).toBe(true);
     expect(existsSync('public/assets/door-curtain-normal.png')).toBe(true);
   });

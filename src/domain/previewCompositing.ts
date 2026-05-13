@@ -64,3 +64,37 @@ export function shadeDesignPixel(design: Pixel, base: Pixel, neutralLuminance = 
 function clampChannel(value: number) {
   return Math.max(0, Math.min(255, Math.round(value)));
 }
+
+/**
+ * Apply a highlight overlay (screen blend) clipped to the product surface.
+ * This simulates specular highlights on the fabric.
+ */
+export function applyHighlightOverlay(
+  ctx: CanvasRenderingContext2D,
+  highlightImage: HTMLImageElement,
+  surfacePath: Point[],
+  width: number,
+  height: number,
+  opacity: number
+) {
+  if (opacity <= 0) return;
+  ctx.save();
+  clipToPreviewSurface(ctx, surfacePath);
+  ctx.globalAlpha = opacity;
+  ctx.globalCompositeOperation = 'screen';
+  ctx.drawImage(highlightImage, 0, 0, width, height);
+  ctx.restore();
+}
+
+function clipToPreviewSurface(
+  context: CanvasRenderingContext2D,
+  surfacePath: Array<{ x: number; y: number }>
+) {
+  context.beginPath();
+  context.moveTo(surfacePath[0].x, surfacePath[0].y);
+  for (const point of surfacePath.slice(1)) {
+    context.lineTo(point.x, point.y);
+  }
+  context.closePath();
+  context.clip();
+}

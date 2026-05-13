@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where node *)",
+      "Bash(export PATH=\"/d/nvm/nodejs:$PATH\")",
+      "Bash(npx vitest *)",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const fs=require\\('fs'\\); const png=fs.readFileSync\\('public/assets/curtain-mask.png'\\); const w=png.readUInt32BE\\(16\\),h=png.readUInt32BE\\(20\\); console.log\\('curtain-mask.png size:', w, 'x', h\\); const shadow=fs.readFileSync\\('public/assets/curtain-shadow.png'\\); const sw=shadow.readUInt32BE\\(16\\),sh=shadow.readUInt32BE\\(20\\); console.log\\('curtain-shadow.png size:', sw, 'x', sh\\); const folds=fs.readFileSync\\('public/assets/door-curtain-folds.png'\\); const fw=folds.readUInt32BE\\(16\\),fh=folds.readUInt32BE\\(20\\); console.log\\('door-curtain-folds.png size:', fw, 'x', fh\\);\")",
+      "Bash(node -e ' *)",
+      "Bash(npm test *)",
+      "Bash(npm run *)"
+    ]
+  }
+}

@@ -22,7 +22,7 @@ import { Group, Image as KonvaImage, Layer, Rect, Stage, Text as KonvaText, Tran
 import { getProductById, getVariant } from '../domain/catalog';
 import { normalOffset } from '../domain/normalDisplacement';
 import { PerspectiveTransform } from '../domain/perspectiveTransform';
-import { getPreviewRenderMode, getPreviewSurfacePath, shadeDesignPixel, shouldRenderSurfaceEffects } from '../domain/previewCompositing';
+import { applyHighlightOverlay, getPreviewRenderMode, getPreviewSurfacePath, shadeDesignPixel, shouldRenderSurfaceEffects } from '../domain/previewCompositing';
 import {
   applyTemplate,
   createBlankProject,
@@ -679,7 +679,6 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   const baseImage = useImageElement(product.mockup.baseImage);
   const textureImage = useImageElement(product.mockup.textureImage);
   const maskImage = useImageElement(product.mockup.maskImage);
-  const shadowImage = useImageElement(product.mockup.shadowImage);
   const highlightImage = useImageElement(product.mockup.highlightImage);
   const normalImage = useImageElement(product.mockup.normalImage);
   const textureArea = product.mockup.textureArea ?? view.printArea;
@@ -687,9 +686,8 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   const previewSurfacePath = useMemo(() => getPreviewSurfacePath(product), [product]);
   const textureBlendMode = product.mockup.textureBlendMode ?? 'source-over';
   const textureOpacity = product.mockup.textureOpacity ?? 0.38;
-  const shadowOpacity = product.mockup.shadowOpacity ?? 0.24;
-  const highlightOpacity = product.mockup.highlightOpacity ?? 0.18;
-  const normalStrength = product.mockup.normalStrength ?? 0.14;
+  const highlightOpacity = product.mockup.highlightOpacity ?? 0.28;
+  const normalStrength = product.mockup.normalStrength ?? 0.16;
   const warpPoints = product.mockup.warpPoints;
   const renderMode = getPreviewRenderMode(product);
   const renderSurfaceEffects = shouldRenderSurfaceEffects(layers);
@@ -796,19 +794,22 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     }
 
     if (maskImage) {
-      applySoftMask(surfaceContext, maskImage, PVW, PVH, 1.2);
+      applyPanelMask(surfaceContext, maskImage, PVW, PVH, 1.5);
     }
 
+    featherSurfaceEdges(surfaceContext, PVW, PVH, 1);
+
+    // Step 3: Normal displacement for subtle depth
     if (renderSurfaceEffects && normalImage) {
       applyNormalDisplacement(surfaceContext, normalImage, PVW, PVH, normalStrength);
     }
 
-    if (baseImage && !shadowImage && !highlightImage && !textureImage) {
+    // Fallback: when no dedicated shadow/highlight assets, use base image lighting
+    if (baseImage && !highlightImage && !textureImage) {
       applyBaseImageLighting(surfaceContext, baseImage, PVW, PVH);
-      featherSurfaceEdges(surfaceContext, PVW, PVH, 2);
     }
 
-    // Step 3: Composite everything onto final canvas
+    // Step 5: Composite everything onto final canvas
     const canvas = document.createElement('canvas');
     canvas.width = PVW;
     canvas.height = PVH;
@@ -823,28 +824,15 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
       ctx.drawImage(baseImage, 0, 0, PVW, PVH);
     }
 
-    // Overlay the clipped design as a single layer to avoid triangle-grid seams.
+    // Overlay the blended design surface
     ctx.drawImage(surfaceCanvas, 0, 0);
 
-    // Step 4: Add transparent fold lighting and product shading over the design.
-    if (renderSurfaceEffects && shadowImage) {
-      ctx.save();
-      clipToPreviewSurface(ctx, previewSurfacePath);
-      ctx.globalAlpha = shadowOpacity;
-      ctx.globalCompositeOperation = 'multiply';
-      ctx.drawImage(shadowImage, 0, 0, PVW, PVH);
-      ctx.restore();
-    }
-
+    // Step 6: Highlight overlay (screen blend) for specular light on the design
     if (renderSurfaceEffects && highlightImage) {
-      ctx.save();
-      clipToPreviewSurface(ctx, previewSurfacePath);
-      ctx.globalAlpha = highlightOpacity;
-      ctx.globalCompositeOperation = 'screen';
-      ctx.drawImage(highlightImage, 0, 0, PVW, PVH);
-      ctx.restore();
+      applyHighlightOverlay(ctx, highlightImage, previewSurfacePath, PVW, PVH, highlightOpacity);
     }
 
+    // Cloth texture overlay
     if (renderSurfaceEffects && textureImage) {
       ctx.save();
       clipToPreviewSurface(ctx, previewSurfacePath);
@@ -856,8 +844,8 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
 
     setPreviewDataUrl(canvas.toDataURL());
   }, [
-    layersJson, loadCount, baseImage, textureImage, maskImage, shadowImage, highlightImage, normalImage,
-    textureBlendMode, textureOpacity, shadowOpacity, highlightOpacity, normalStrength, renderMode, warpPoints,
+    layersJson, loadCount, baseImage, textureImage, maskImage, highlightImage, normalImage,
+    textureBlendMode, textureOpacity, highlightOpacity, normalStrength, renderMode, warpPoints,
     renderSurfaceEffects, previewSurfacePath, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
     allImagesReady, imageLayers.length
   ]);
@@ -1080,28 +1068,47 @@ function luminance(r: number, g: number, b: number) {
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-function applySoftMask(
+function applyPanelMask(
   context: CanvasRenderingContext2D,
   maskImage: HTMLImageElement,
   width: number,
   height: number,
   blurRadius: number
 ) {
+  const source = context.getImageData(0, 0, width, height);
   const maskCanvas = document.createElement('canvas');
   maskCanvas.width = width;
   maskCanvas.height = height;
   const maskContext = maskCanvas.getContext('2d');
   if (!maskContext) return;
 
-  maskContext.filter = `blur(${blurRadius}px)`;
   maskContext.drawImage(maskImage, 0, 0, width, height);
-  maskContext.filter = 'none';
-  maskContext.globalCompositeOperation = 'destination-in';
-  maskContext.drawImage(maskImage, 1, 1, width - 2, height - 2);
+  const mask = maskContext.getImageData(0, 0, width, height);
+  const maskAlpha = maskContext.createImageData(width, height);
+  for (let index = 0; index < mask.data.length; index += 4) {
+    const panelAlpha = 255 - mask.data[index + 3];
+    maskAlpha.data[index] = 255;
+    maskAlpha.data[index + 1] = 255;
+    maskAlpha.data[index + 2] = 255;
+    maskAlpha.data[index + 3] = panelAlpha;
+  }
+  maskContext.putImageData(maskAlpha, 0, 0);
 
-  context.globalCompositeOperation = 'destination-in';
-  context.drawImage(maskCanvas, 0, 0);
-  context.globalCompositeOperation = 'source-over';
+  const blurredCanvas = document.createElement('canvas');
+  blurredCanvas.width = width;
+  blurredCanvas.height = height;
+  const blurredContext = blurredCanvas.getContext('2d');
+  if (!blurredContext) return;
+  blurredContext.filter = `blur(${blurRadius}px)`;
+  blurredContext.drawImage(maskCanvas, 0, 0);
+  blurredContext.filter = 'none';
+  const softened = blurredContext.getImageData(0, 0, width, height);
+
+  for (let index = 0; index < source.data.length; index += 4) {
+    source.data[index + 3] = Math.round((source.data[index + 3] * softened.data[index + 3]) / 255);
+  }
+
+  context.putImageData(source, 0, 0);
 }
 
 function renderPerspectiveSurface(
@@ -1126,7 +1133,8 @@ function renderPerspectiveSurface(
     for (let x = 0; x < bounds.width; x += 1) {
       const dx = bounds.x + x;
       const dy = bounds.y + y;
-      if (!pointInQuad(dx + 0.5, dy + 0.5, destination)) continue;
+      const coverage = getQuadCoverage(dx, dy, destination);
+      if (coverage === 0) continue;
 
       const [sx, sy] = transform.transformInverse(dx + 0.5, dy + 0.5);
       if (sx < 0 || sx >= sourceWidth || sy < 0 || sy >= sourceHeight) continue;
@@ -1136,7 +1144,7 @@ function renderPerspectiveSurface(
       output.data[outputIndex] = sampled.r;
       output.data[outputIndex + 1] = sampled.g;
       output.data[outputIndex + 2] = sampled.b;
-      output.data[outputIndex + 3] = sampled.a;
+      output.data[outputIndex + 3] = Math.round(sampled.a * coverage);
     }
   }
 
@@ -1155,6 +1163,20 @@ function getQuadBounds(points: Array<{ x: number; y: number }>, canvasWidth: num
     width: Math.max(1, maxX - minX),
     height: Math.max(1, maxY - minY)
   };
+}
+
+function getQuadCoverage(x: number, y: number, quad: Array<{ x: number; y: number }>) {
+  const sampleOffsets = [
+    [0.25, 0.25],
+    [0.75, 0.25],
+    [0.25, 0.75],
+    [0.75, 0.75]
+  ];
+  let hits = 0;
+  for (const [offsetX, offsetY] of sampleOffsets) {
+    if (pointInQuad(x + offsetX, y + offsetY, quad)) hits += 1;
+  }
+  return hits / sampleOffsets.length;
 }
 
 function pointInQuad(x: number, y: number, quad: Array<{ x: number; y: number }>) {

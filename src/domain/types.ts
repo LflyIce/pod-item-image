@@ -47,8 +47,6 @@ export type Product = {
     background: string;
     baseImage?: string;
     maskImage?: string;
-    shadowImage?: string;
-    shadowOpacity?: number;
     highlightImage?: string;
     highlightOpacity?: number;
     normalImage?: string;

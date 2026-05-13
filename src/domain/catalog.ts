@@ -25,12 +25,10 @@ export const PRODUCTS: Product[] = [
       background: 'linear-gradient(135deg, #eef2ff 0%, #f8fafc 44%, #e0f2fe 100%)',
       baseImage: '/assets/door-curtain-base.png',
       maskImage: '/assets/curtain-mask.png',
-      shadowImage: '/assets/door-curtain-shadow.png',
-      shadowOpacity: 0.26,
       highlightImage: '/assets/door-curtain-highlight.png',
-      highlightOpacity: 0.2,
+      highlightOpacity: 0.18,
       normalImage: '/assets/door-curtain-normal.png',
-      normalStrength: 0.16,
+      normalStrength: 0.08,
       textureImage: '/assets/door-curtain-folds.png',
       textureArea: { x: 154, y: 143, width: 156, height: 259 },
       texturePolygon: [
@@ -40,7 +38,7 @@ export const PRODUCTS: Product[] = [
         { x: 156, y: 400 }
       ],
       textureBlendMode: 'soft-light',
-      textureOpacity: 0.32,
+      textureOpacity: 0.12,
       warpPoints: {
         src: [
           { x: 0, y: 0 },
