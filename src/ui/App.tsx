@@ -13,17 +13,16 @@ import {
   Settings,
   ShoppingCart,
   Sparkles,
+  SlidersHorizontal,
   Trash2,
   Type,
   Upload
 } from 'lucide-react';
 import { Group, Image as KonvaImage, Layer, Rect, Stage, Text as KonvaText, Transformer } from 'react-konva';
 import { getProductById, getVariant } from '../domain/catalog';
-import { PerspectiveTransform } from '../domain/perspectiveTransform';
-import { WarpMesh } from '../domain/meshRenderer';
-import { axisAlignedRectFromQuad } from '../domain/mockupGeometry';
 import { normalOffset } from '../domain/normalDisplacement';
-import { shouldRenderSurfaceEffects } from '../domain/previewCompositing';
+import { PerspectiveTransform } from '../domain/perspectiveTransform';
+import { getPreviewRenderMode, getPreviewSurfacePath, shadeDesignPixel, shouldRenderSurfaceEffects } from '../domain/previewCompositing';
 import {
   applyTemplate,
   createBlankProject,
@@ -35,8 +34,9 @@ import {
   updateTextLayer
 } from '../domain/design';
 import { fitLayerToArea, setLayerTileMode } from '../domain/editorActions';
+import { applyMockupTemplate, createMockupTemplate, type MockupTemplate } from '../domain/mockupTemplate';
 import { addCartItem, createOrderFromCart } from '../domain/order';
-import type { CartItem, DesignLayer, DesignProject, ImageLayer, Order, Product, TemplateLayer, TextLayer } from '../domain/types';
+import type { CartItem, DesignLayer, DesignProject, ImageLayer, Order, Point, Product, TemplateLayer, TextLayer } from '../domain/types';
 
 const sampleAssets = [
   {
@@ -129,7 +129,10 @@ type AssetItem = {
 };
 
 export function App() {
-  const product = getProductById('door-curtain');
+  const baseProduct = getProductById('door-curtain');
+  const [activeScreen, setActiveScreen] = useState<'designer' | 'template-manager'>('designer');
+  const [mockupTemplates, setMockupTemplates] = useState<MockupTemplate[]>([]);
+  const [activeMockupTemplateId, setActiveMockupTemplateId] = useState<string | null>(null);
   const [project, setProject] = useState<DesignProject>(() => createBlankProject('door-curtain', 'curtain-white'));
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
   const [assetTab, setAssetTab] = useState<'templates' | 'mine' | 'favorites'>('templates');
@@ -139,6 +142,10 @@ export function App() {
   const [showMoreActions, setShowMoreActions] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const product = useMemo(() => {
+    const activeTemplate = mockupTemplates.find((template) => template.id === activeMockupTemplateId);
+    return activeTemplate ? applyMockupTemplate(baseProduct, activeTemplate) : baseProduct;
+  }, [activeMockupTemplateId, baseProduct, mockupTemplates]);
 
   const activeVariant = getVariant(project.productId, project.variantId);
   const activeView = product.views[0];
@@ -288,6 +295,32 @@ export function App() {
 
   const visibleAssets = assetTab === 'mine' ? myAssets : sampleAssets.map((asset) => ({ ...asset, width: 900, height: 1400 }));
 
+  const updateMockupTemplate = (templateId: string, updates: Partial<Pick<MockupTemplate, 'name' | 'surface'>>) => {
+    setMockupTemplates((current) =>
+      current.map((template) => (template.id === templateId ? { ...template, ...updates } : template))
+    );
+  };
+
+  if (activeScreen === 'template-manager') {
+    return (
+      <TemplateManager
+        templates={mockupTemplates}
+        activeTemplateId={activeMockupTemplateId}
+        onBack={() => setActiveScreen('designer')}
+        onCreateTemplate={(template) => {
+          setMockupTemplates((current) => [template, ...current]);
+          setActiveMockupTemplateId(template.id);
+        }}
+        onSelectTemplate={setActiveMockupTemplateId}
+        onUpdateTemplate={updateMockupTemplate}
+        onApplyTemplate={(templateId) => {
+          setActiveMockupTemplateId(templateId);
+          setActiveScreen('designer');
+        }}
+      />
+    );
+  }
+
   return (
     <main className="designer-app">
       <header className="designer-topbar">
@@ -301,6 +334,10 @@ export function App() {
         <button className="icon-text" onClick={() => fileInputRef.current?.click()}>
           <Upload size={16} />
           上传图片
+        </button>
+        <button className="icon-text" onClick={() => setActiveScreen('template-manager')}>
+          <SlidersHorizontal size={16} />
+          模板管理
         </button>
         <div className="top-product">
           <img src="/assets/door-curtain-base.png" alt="" />
@@ -446,6 +483,148 @@ function RailItem({ icon, label, active, badge }: { icon: React.ReactNode; label
   );
 }
 
+function TemplateManager({
+  templates,
+  activeTemplateId,
+  onBack,
+  onCreateTemplate,
+  onSelectTemplate,
+  onUpdateTemplate,
+  onApplyTemplate
+}: {
+  templates: MockupTemplate[];
+  activeTemplateId: string | null;
+  onBack: () => void;
+  onCreateTemplate: (template: MockupTemplate) => void;
+  onSelectTemplate: (templateId: string | null) => void;
+  onUpdateTemplate: (templateId: string, updates: Partial<Pick<MockupTemplate, 'name' | 'surface'>>) => void;
+  onApplyTemplate: (templateId: string) => void;
+}) {
+  const uploadRef = useRef<HTMLInputElement | null>(null);
+  const [dragPoint, setDragPoint] = useState<number | null>(null);
+  const activeTemplate = templates.find((template) => template.id === activeTemplateId);
+
+  const onUploadTemplate = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      onCreateTemplate(createMockupTemplate(file.name, String(reader.result)));
+    };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  };
+
+  const updatePointFromPointer = (event: React.PointerEvent<SVGSVGElement>, pointIndex: number) => {
+    if (!activeTemplate) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(500, ((event.clientX - rect.left) / rect.width) * 500));
+    const y = Math.max(0, Math.min(500, ((event.clientY - rect.top) / rect.height) * 500));
+    const surface = activeTemplate.surface.map((point, index) => (index === pointIndex ? { x: Math.round(x), y: Math.round(y) } : point));
+    onUpdateTemplate(activeTemplate.id, { surface });
+  };
+
+  const resetSurface = () => {
+    if (!activeTemplate) return;
+    onUpdateTemplate(activeTemplate.id, {
+      surface: [
+        { x: 154, y: 147 },
+        { x: 310, y: 143 },
+        { x: 310, y: 402 },
+        { x: 156, y: 400 }
+      ]
+    });
+  };
+
+  return (
+    <main className="template-manager-app">
+      <header className="template-manager-header">
+        <div>
+          <strong>模板管理</strong>
+          <span>上传效果图模板，并手动标记固定贴图区域</span>
+        </div>
+        <div className="template-manager-actions">
+          <button className="soft-button" onClick={() => uploadRef.current?.click()}>
+            <Upload size={16} />
+            上传模板图
+          </button>
+          <button className="save-button" onClick={onBack}>返回设计器</button>
+        </div>
+        <input ref={uploadRef} className="hidden-input" type="file" accept="image/png,image/jpeg" onChange={onUploadTemplate} />
+      </header>
+
+      <section className="template-manager-layout">
+        <aside className="template-list-panel">
+          <button className={!activeTemplateId ? 'template-list-item active' : 'template-list-item'} onClick={() => onSelectTemplate(null)}>
+            <strong>默认门帘模板</strong>
+            <span>使用内置样机参数</span>
+          </button>
+          {templates.map((template) => (
+            <button
+              key={template.id}
+              className={template.id === activeTemplate?.id ? 'template-list-item active' : 'template-list-item'}
+              onClick={() => onSelectTemplate(template.id)}
+            >
+              <strong>{template.name}</strong>
+              <span>{new Date(template.createdAt).toLocaleString()}</span>
+            </button>
+          ))}
+        </aside>
+
+        <section className="template-editor-panel">
+          {activeTemplate ? (
+            <>
+              <div className="template-editor-toolbar">
+                <input
+                  value={activeTemplate.name}
+                  onChange={(event) => onUpdateTemplate(activeTemplate.id, { name: event.target.value })}
+                  aria-label="模板名称"
+                />
+                <button className="soft-button" onClick={resetSurface}>重置区域</button>
+                <button className="save-button" onClick={() => onApplyTemplate(activeTemplate.id)}>应用到设计器</button>
+              </div>
+              <div className="surface-editor">
+                <img src={activeTemplate.baseImage} alt="" />
+                <svg
+                  viewBox="0 0 500 500"
+                  onPointerMove={(event) => dragPoint !== null && updatePointFromPointer(event, dragPoint)}
+                  onPointerUp={() => setDragPoint(null)}
+                  onPointerLeave={() => setDragPoint(null)}
+                >
+                  <polygon points={activeTemplate.surface.map((point) => `${point.x},${point.y}`).join(' ')} />
+                  {activeTemplate.surface.map((point, index) => (
+                    <g key={index}>
+                      <circle
+                        cx={point.x}
+                        cy={point.y}
+                        r="8"
+                        onPointerDown={(event) => {
+                          event.currentTarget.setPointerCapture(event.pointerId);
+                          setDragPoint(index);
+                        }}
+                      />
+                      <text x={point.x + 12} y={point.y - 10}>{index + 1}</text>
+                    </g>
+                  ))}
+                </svg>
+              </div>
+              <div className="surface-hint">
+                拖动四个蓝色点标记贴图区域。素材会被限制在这个区域内，再按该区域透视到效果图里。
+              </div>
+            </>
+          ) : (
+            <div className="template-empty-state">
+              <strong>选择或上传自定义模板</strong>
+              <span>上传一张商品效果图模板后，就可以手动标记固定贴图区域。</span>
+              <button className="save-button" onClick={() => uploadRef.current?.click()}>上传模板图</button>
+            </div>
+          )}
+        </section>
+      </section>
+    </main>
+  );
+}
+
 function KonvaEditor({
   product,
   layers,
@@ -471,16 +650,23 @@ function KonvaEditor({
         <Layer>
           <Rect width={view.canvas.width} height={view.canvas.height} fill="#ffffff" shadowBlur={18} shadowColor="rgba(15,23,42,.12)" />
 
-          {layers.map((layer) => (
-            <EditableLayer
-              key={layer.id}
-              layer={layer}
-              selected={layer.id === selectedLayerId}
-              onSelect={() => onSelect(layer.id)}
-              onMove={(x, y) => onMove(layer.id, x, y)}
-              onTransform={(geometry) => onTransform(layer.id, geometry)}
-            />
-          ))}
+          <Group
+            clipX={view.printArea.x}
+            clipY={view.printArea.y}
+            clipWidth={view.printArea.width}
+            clipHeight={view.printArea.height}
+          >
+            {layers.map((layer) => (
+              <EditableLayer
+                key={layer.id}
+                layer={layer}
+                selected={layer.id === selectedLayerId}
+                onSelect={() => onSelect(layer.id)}
+                onMove={(x, y) => onMove(layer.id, x, y)}
+                onTransform={(geometry) => onTransform(layer.id, geometry)}
+              />
+            ))}
+          </Group>
           {layers.length === 0 ? <UploadPlaceholder x={view.printArea.x} y={view.printArea.y} width={view.printArea.width} height={view.printArea.height} /> : null}
         </Layer>
       </Stage>
@@ -498,12 +684,14 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   const normalImage = useImageElement(product.mockup.normalImage);
   const textureArea = product.mockup.textureArea ?? view.printArea;
   const texturePolygon = product.mockup.texturePolygon;
+  const previewSurfacePath = useMemo(() => getPreviewSurfacePath(product), [product]);
   const textureBlendMode = product.mockup.textureBlendMode ?? 'source-over';
   const textureOpacity = product.mockup.textureOpacity ?? 0.38;
   const shadowOpacity = product.mockup.shadowOpacity ?? 0.24;
   const highlightOpacity = product.mockup.highlightOpacity ?? 0.18;
   const normalStrength = product.mockup.normalStrength ?? 0.14;
   const warpPoints = product.mockup.warpPoints;
+  const renderMode = getPreviewRenderMode(product);
   const renderSurfaceEffects = shouldRenderSurfaceEffects(layers);
 
   const layersJson = useMemo(() => JSON.stringify(layers.map(l => ({
@@ -549,9 +737,9 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     return img && img.complete && img.naturalWidth > 0;
   });
 
-  // ===== Rendering Pipeline: SAM2 mask + Perspective Warp + Lighting Fusion =====
+  // ===== Rendering Pipeline: layered design surface + mask + lighting fusion =====
   useEffect(() => {
-    if (!warpPoints || warpPoints.src.length !== 4 || warpPoints.dst.length !== 4) return;
+    if (renderMode !== 'layered-2d' && renderMode !== 'perspective-2d') return;
     if (!baseImage && product.mockup.baseImage) return;
     if (!allImagesReady && imageLayers.length > 0) return;
 
@@ -592,58 +780,35 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
       dCtx.restore();
     }
 
-    // Step 2: Warp design onto product area using perspective transform
-    const warpedCanvas = document.createElement('canvas');
-    warpedCanvas.width = PVW;
-    warpedCanvas.height = PVH;
-    const wCtx = warpedCanvas.getContext('2d')!;
+    // Step 2: Hicustom-style layered preview: one full design image clipped into the product surface.
+    const surfaceCanvas = document.createElement('canvas');
+    surfaceCanvas.width = PVW;
+    surfaceCanvas.height = PVH;
+    const surfaceContext = surfaceCanvas.getContext('2d')!;
 
-    if (product.mockup.warpPanels?.length) {
-      for (const panel of product.mockup.warpPanels) {
-        const panelSource = document.createElement('canvas');
-        const sx = panel.source.x * srcW;
-        const sy = panel.source.y * srcH;
-        const sw = panel.source.width * srcW;
-        const sh = panel.source.height * srcH;
-        panelSource.width = Math.max(1, Math.round(sw));
-        panelSource.height = Math.max(1, Math.round(sh));
-        const panelContext = panelSource.getContext('2d');
-        if (!panelContext) continue;
-        panelContext.drawImage(designCanvas, sx, sy, sw, sh, 0, 0, panelSource.width, panelSource.height);
-        renderWarpedCanvas(wCtx, panelSource, panelSource.width, panelSource.height, panel.dst, PVW, PVH);
-      }
+    if (renderMode === 'perspective-2d' && warpPoints?.dst.length === 4) {
+      renderPerspectiveSurface(surfaceContext, designCanvas, srcW, srcH, warpPoints.dst);
     } else {
-      renderWarpedCanvas(wCtx, designCanvas, srcW, srcH, warpPoints.dst, PVW, PVH);
+      surfaceContext.save();
+      clipToPreviewSurface(surfaceContext, previewSurfacePath);
+      surfaceContext.drawImage(designCanvas, textureArea.x, textureArea.y, textureArea.width, textureArea.height);
+      surfaceContext.restore();
     }
 
-    // Step 3: Apply mask — only keep pixels inside the curtain area
     if (maskImage) {
-      wCtx.globalCompositeOperation = 'destination-in';
-      wCtx.drawImage(maskImage, 0, 0, PVW, PVH);
-      wCtx.globalCompositeOperation = 'source-over';
+      applySoftMask(surfaceContext, maskImage, PVW, PVH, 1.2);
     }
 
     if (renderSurfaceEffects && normalImage) {
-      applyNormalDisplacement(wCtx, normalImage, PVW, PVH, normalStrength);
+      applyNormalDisplacement(surfaceContext, normalImage, PVW, PVH, normalStrength);
     }
 
-    if (renderSurfaceEffects && shadowImage) {
-      wCtx.save();
-      wCtx.globalAlpha = shadowOpacity;
-      wCtx.globalCompositeOperation = 'multiply';
-      wCtx.drawImage(shadowImage, 0, 0, PVW, PVH);
-      wCtx.restore();
+    if (baseImage && !shadowImage && !highlightImage && !textureImage) {
+      applyBaseImageLighting(surfaceContext, baseImage, PVW, PVH);
+      featherSurfaceEdges(surfaceContext, PVW, PVH, 2);
     }
 
-    if (renderSurfaceEffects && highlightImage) {
-      wCtx.save();
-      wCtx.globalAlpha = highlightOpacity;
-      wCtx.globalCompositeOperation = 'screen';
-      wCtx.drawImage(highlightImage, 0, 0, PVW, PVH);
-      wCtx.restore();
-    }
-
-    // Step 4: Composite everything onto final canvas
+    // Step 3: Composite everything onto final canvas
     const canvas = document.createElement('canvas');
     canvas.width = PVW;
     canvas.height = PVH;
@@ -658,21 +823,31 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
       ctx.drawImage(baseImage, 0, 0, PVW, PVH);
     }
 
-    // Overlay the warped design with mask + lighting
-    ctx.drawImage(warpedCanvas, 0, 0);
+    // Overlay the clipped design as a single layer to avoid triangle-grid seams.
+    ctx.drawImage(surfaceCanvas, 0, 0);
 
-    // Step 5: Add transparent fold lighting for extra realism
+    // Step 4: Add transparent fold lighting and product shading over the design.
+    if (renderSurfaceEffects && shadowImage) {
+      ctx.save();
+      clipToPreviewSurface(ctx, previewSurfacePath);
+      ctx.globalAlpha = shadowOpacity;
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.drawImage(shadowImage, 0, 0, PVW, PVH);
+      ctx.restore();
+    }
+
+    if (renderSurfaceEffects && highlightImage) {
+      ctx.save();
+      clipToPreviewSurface(ctx, previewSurfacePath);
+      ctx.globalAlpha = highlightOpacity;
+      ctx.globalCompositeOperation = 'screen';
+      ctx.drawImage(highlightImage, 0, 0, PVW, PVH);
+      ctx.restore();
+    }
+
     if (renderSurfaceEffects && textureImage) {
       ctx.save();
-      if (texturePolygon && texturePolygon.length >= 3) {
-        ctx.beginPath();
-        ctx.moveTo(texturePolygon[0].x, texturePolygon[0].y);
-        for (const point of texturePolygon.slice(1)) {
-          ctx.lineTo(point.x, point.y);
-        }
-        ctx.closePath();
-        ctx.clip();
-      }
+      clipToPreviewSurface(ctx, previewSurfacePath);
       ctx.globalAlpha = textureOpacity;
       ctx.globalCompositeOperation = textureBlendMode;
       ctx.drawImage(textureImage, 0, 0, PVW, PVH);
@@ -682,9 +857,8 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     setPreviewDataUrl(canvas.toDataURL());
   }, [
     layersJson, loadCount, baseImage, textureImage, maskImage, shadowImage, highlightImage, normalImage,
-    textureBlendMode, textureOpacity, shadowOpacity, highlightOpacity, normalStrength, warpPoints,
-    product.mockup.warpPanels,
-    renderSurfaceEffects, texturePolygon, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
+    textureBlendMode, textureOpacity, shadowOpacity, highlightOpacity, normalStrength, renderMode, warpPoints,
+    renderSurfaceEffects, previewSurfacePath, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
     allImagesReady, imageLayers.length
   ]);
 
@@ -693,10 +867,10 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     const scaleX = textureArea.width / view.printArea.width;
     const scaleY = textureArea.height / view.printArea.height;
     const clipFunc = (context: SceneContext) => {
-      if (texturePolygon && texturePolygon.length >= 3) {
+      if (previewSurfacePath.length >= 3) {
         context.beginPath();
-        context.moveTo(texturePolygon[0].x, texturePolygon[0].y);
-        for (const point of texturePolygon.slice(1)) {
+        context.moveTo(previewSurfacePath[0].x, previewSurfacePath[0].y);
+        for (const point of previewSurfacePath.slice(1)) {
           context.lineTo(point.x, point.y);
         }
         context.closePath();
@@ -810,32 +984,237 @@ function applyNormalDisplacement(
   context.putImageData(displaced, 0, 0);
 }
 
-function renderWarpedCanvas(
+function applyBaseImageLighting(
+  context: CanvasRenderingContext2D,
+  baseImage: HTMLImageElement,
+  width: number,
+  height: number
+) {
+  const baseCanvas = document.createElement('canvas');
+  baseCanvas.width = width;
+  baseCanvas.height = height;
+  const baseContext = baseCanvas.getContext('2d');
+  if (!baseContext) return;
+
+  baseContext.drawImage(baseImage, 0, 0, width, height);
+  const surface = context.getImageData(0, 0, width, height);
+  const base = baseContext.getImageData(0, 0, width, height);
+  const neutralLuminance = getSurfaceNeutralLuminance(surface, base);
+
+  for (let index = 0; index < surface.data.length; index += 4) {
+    const alpha = surface.data[index + 3];
+    if (alpha === 0) continue;
+
+    const shaded = shadeDesignPixel(
+      {
+        r: surface.data[index],
+        g: surface.data[index + 1],
+        b: surface.data[index + 2],
+        a: alpha
+      },
+      {
+        r: base.data[index],
+        g: base.data[index + 1],
+        b: base.data[index + 2],
+        a: base.data[index + 3]
+      },
+      neutralLuminance
+    );
+
+    surface.data[index] = shaded.r;
+    surface.data[index + 1] = shaded.g;
+    surface.data[index + 2] = shaded.b;
+    surface.data[index + 3] = shaded.a;
+  }
+
+  context.putImageData(surface, 0, 0);
+}
+
+function featherSurfaceEdges(
+  context: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+  passes: number
+) {
+  for (let pass = 0; pass < passes; pass += 1) {
+    const image = context.getImageData(0, 0, width, height);
+    const next = new Uint8ClampedArray(image.data);
+
+    for (let y = 1; y < height - 1; y += 1) {
+      for (let x = 1; x < width - 1; x += 1) {
+        const index = (y * width + x) * 4;
+        const alpha = image.data[index + 3];
+        if (alpha === 0) continue;
+
+        const minNeighborAlpha = Math.min(
+          image.data[index - 4 + 3],
+          image.data[index + 4 + 3],
+          image.data[index - width * 4 + 3],
+          image.data[index + width * 4 + 3]
+        );
+
+        if (minNeighborAlpha < alpha) {
+          next[index + 3] = Math.max(minNeighborAlpha, Math.round(alpha * 0.82));
+        }
+      }
+    }
+
+    context.putImageData(new ImageData(next, width, height), 0, 0);
+  }
+}
+
+function getSurfaceNeutralLuminance(surface: ImageData, base: ImageData) {
+  let total = 0;
+  let count = 0;
+
+  for (let index = 0; index < surface.data.length; index += 4) {
+    if (surface.data[index + 3] === 0 || base.data[index + 3] === 0) continue;
+    total += luminance(base.data[index], base.data[index + 1], base.data[index + 2]);
+    count += 1;
+  }
+
+  return count > 0 ? total / count : 226;
+}
+
+function luminance(r: number, g: number, b: number) {
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+function applySoftMask(
+  context: CanvasRenderingContext2D,
+  maskImage: HTMLImageElement,
+  width: number,
+  height: number,
+  blurRadius: number
+) {
+  const maskCanvas = document.createElement('canvas');
+  maskCanvas.width = width;
+  maskCanvas.height = height;
+  const maskContext = maskCanvas.getContext('2d');
+  if (!maskContext) return;
+
+  maskContext.filter = `blur(${blurRadius}px)`;
+  maskContext.drawImage(maskImage, 0, 0, width, height);
+  maskContext.filter = 'none';
+  maskContext.globalCompositeOperation = 'destination-in';
+  maskContext.drawImage(maskImage, 1, 1, width - 2, height - 2);
+
+  context.globalCompositeOperation = 'destination-in';
+  context.drawImage(maskCanvas, 0, 0);
+  context.globalCompositeOperation = 'source-over';
+}
+
+function renderPerspectiveSurface(
   context: CanvasRenderingContext2D,
   source: HTMLCanvasElement,
   sourceWidth: number,
   sourceHeight: number,
-  destination: Array<{ x: number; y: number }>,
-  previewWidth: number,
-  previewHeight: number
+  destination: Array<{ x: number; y: number }>
 ) {
-  const directRect = axisAlignedRectFromQuad(destination);
-  if (directRect) {
-    context.drawImage(source, directRect.x, directRect.y, directRect.width, directRect.height);
-    return;
+  const transform = new PerspectiveTransform(
+    [0, 0, sourceWidth, 0, sourceWidth, sourceHeight, 0, sourceHeight],
+    destination.flatMap((point) => [point.x, point.y])
+  );
+  const sourceContext = source.getContext('2d');
+  if (!sourceContext) return;
+
+  const bounds = getQuadBounds(destination, context.canvas.width, context.canvas.height);
+  const sourceData = sourceContext.getImageData(0, 0, sourceWidth, sourceHeight);
+  const output = context.getImageData(bounds.x, bounds.y, bounds.width, bounds.height);
+
+  for (let y = 0; y < bounds.height; y += 1) {
+    for (let x = 0; x < bounds.width; x += 1) {
+      const dx = bounds.x + x;
+      const dy = bounds.y + y;
+      if (!pointInQuad(dx + 0.5, dy + 0.5, destination)) continue;
+
+      const [sx, sy] = transform.transformInverse(dx + 0.5, dy + 0.5);
+      if (sx < 0 || sx >= sourceWidth || sy < 0 || sy >= sourceHeight) continue;
+
+      const sampled = sampleBilinear(sourceData, sourceWidth, sourceHeight, sx, sy);
+      const outputIndex = (y * bounds.width + x) * 4;
+      output.data[outputIndex] = sampled.r;
+      output.data[outputIndex + 1] = sampled.g;
+      output.data[outputIndex + 2] = sampled.b;
+      output.data[outputIndex + 3] = sampled.a;
+    }
   }
 
-  try {
-    const transform = new PerspectiveTransform(
-      [0, 0, sourceWidth, 0, sourceWidth, sourceHeight, 0, sourceHeight],
-      destination.flatMap((point) => [point.x, point.y])
-    );
-    const mesh = WarpMesh.create(sourceWidth, sourceHeight, previewWidth, previewHeight, transform, 18, 28);
-    mesh.render(context, source, sourceWidth, sourceHeight);
-  } catch {
-    const fallback = destination;
-    context.drawImage(source, fallback[0].x, fallback[0].y, fallback[2].x - fallback[0].x, fallback[2].y - fallback[0].y);
+  context.putImageData(output, bounds.x, bounds.y);
+}
+
+function getQuadBounds(points: Array<{ x: number; y: number }>, canvasWidth: number, canvasHeight: number) {
+  const minX = Math.max(0, Math.floor(Math.min(...points.map((point) => point.x))));
+  const minY = Math.max(0, Math.floor(Math.min(...points.map((point) => point.y))));
+  const maxX = Math.min(canvasWidth, Math.ceil(Math.max(...points.map((point) => point.x))));
+  const maxY = Math.min(canvasHeight, Math.ceil(Math.max(...points.map((point) => point.y))));
+
+  return {
+    x: minX,
+    y: minY,
+    width: Math.max(1, maxX - minX),
+    height: Math.max(1, maxY - minY)
+  };
+}
+
+function pointInQuad(x: number, y: number, quad: Array<{ x: number; y: number }>) {
+  let inside = false;
+  for (let i = 0, j = quad.length - 1; i < quad.length; j = i, i += 1) {
+    const current = quad[i];
+    const previous = quad[j];
+    const crosses = current.y > y !== previous.y > y;
+    if (!crosses) continue;
+    const intersectionX = ((previous.x - current.x) * (y - current.y)) / (previous.y - current.y) + current.x;
+    if (x < intersectionX) inside = !inside;
   }
+  return inside;
+}
+
+function sampleBilinear(image: ImageData, width: number, height: number, x: number, y: number) {
+  const x0 = Math.max(0, Math.min(width - 1, Math.floor(x)));
+  const y0 = Math.max(0, Math.min(height - 1, Math.floor(y)));
+  const x1 = Math.max(0, Math.min(width - 1, x0 + 1));
+  const y1 = Math.max(0, Math.min(height - 1, y0 + 1));
+  const tx = x - x0;
+  const ty = y - y0;
+  const topLeft = getPixel(image, width, x0, y0);
+  const topRight = getPixel(image, width, x1, y0);
+  const bottomLeft = getPixel(image, width, x0, y1);
+  const bottomRight = getPixel(image, width, x1, y1);
+
+  return {
+    r: mix(mix(topLeft.r, topRight.r, tx), mix(bottomLeft.r, bottomRight.r, tx), ty),
+    g: mix(mix(topLeft.g, topRight.g, tx), mix(bottomLeft.g, bottomRight.g, tx), ty),
+    b: mix(mix(topLeft.b, topRight.b, tx), mix(bottomLeft.b, bottomRight.b, tx), ty),
+    a: mix(mix(topLeft.a, topRight.a, tx), mix(bottomLeft.a, bottomRight.a, tx), ty)
+  };
+}
+
+function getPixel(image: ImageData, width: number, x: number, y: number) {
+  const index = (y * width + x) * 4;
+  return {
+    r: image.data[index],
+    g: image.data[index + 1],
+    b: image.data[index + 2],
+    a: image.data[index + 3]
+  };
+}
+
+function mix(left: number, right: number, amount: number) {
+  return Math.round(left + (right - left) * amount);
+}
+
+function clipToPreviewSurface(
+  context: CanvasRenderingContext2D,
+  surfacePath: Array<{ x: number; y: number }>
+) {
+  context.beginPath();
+  context.moveTo(surfacePath[0].x, surfacePath[0].y);
+  for (const point of surfacePath.slice(1)) {
+    context.lineTo(point.x, point.y);
+  }
+  context.closePath();
+  context.clip();
 }
 
 function EditableLayer({

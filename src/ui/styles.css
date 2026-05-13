@@ -42,7 +42,7 @@ button:disabled {
   border-bottom: 1px solid #dde3eb;
   display: grid;
   gap: 12px;
-  grid-template-columns: 34px 58px 1px auto auto 1fr auto auto auto;
+  grid-template-columns: 34px 58px 1px auto auto auto 1fr auto auto auto;
   height: 56px;
   padding: 0 16px;
 }
@@ -601,4 +601,167 @@ button:disabled {
   right: -12px;
   top: -12px;
   width: 34px;
+}
+
+.template-manager-app {
+  background: #edf1f6;
+  color: #172033;
+  min-height: 100vh;
+}
+
+.template-manager-header {
+  align-items: center;
+  background: #fff;
+  border-bottom: 1px solid #dde3eb;
+  display: flex;
+  justify-content: space-between;
+  min-height: 64px;
+  padding: 0 22px;
+}
+
+.template-manager-header div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.template-manager-header strong {
+  font-size: 18px;
+}
+
+.template-manager-header span,
+.surface-hint,
+.template-list-item span,
+.template-empty-state span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.template-manager-actions,
+.template-editor-toolbar {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.template-manager-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  min-height: calc(100vh - 64px);
+}
+
+.template-list-panel {
+  background: #fff;
+  border-right: 1px solid #dde3eb;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 18px;
+}
+
+.template-list-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #172033;
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  text-align: left;
+}
+
+.template-list-item.active {
+  background: #edf4ff;
+  border-color: #0b5cff;
+  box-shadow: 0 0 0 2px rgba(11, 92, 255, 0.12);
+}
+
+.template-editor-panel {
+  align-content: start;
+  display: grid;
+  grid-template-rows: auto auto auto;
+  justify-items: center;
+  overflow: auto;
+  padding: 24px;
+}
+
+.template-editor-toolbar {
+  background: #fff;
+  border: 1px solid #dde3eb;
+  border-radius: 8px;
+  margin-bottom: 18px;
+  padding: 10px;
+}
+
+.template-editor-toolbar input {
+  border: 1px solid #d6dee9;
+  border-radius: 8px;
+  min-height: 34px;
+  min-width: 260px;
+  padding: 0 12px;
+}
+
+.surface-editor {
+  aspect-ratio: 1;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 20px 42px rgba(15, 23, 42, 0.12);
+  height: auto;
+  max-height: calc(100vh - 190px);
+  max-width: min(680px, 100%);
+  overflow: hidden;
+  position: relative;
+  width: min(68vh, 620px, 100%);
+}
+
+.surface-editor img,
+.surface-editor svg {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.surface-editor img {
+  object-fit: fill;
+}
+
+.surface-editor polygon {
+  fill: rgba(11, 92, 255, 0.16);
+  stroke: #0b5cff;
+  stroke-dasharray: 8 7;
+  stroke-width: 2;
+}
+
+.surface-editor circle {
+  cursor: grab;
+  fill: #0b5cff;
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.surface-editor text {
+  fill: #0b5cff;
+  font-size: 16px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: #fff;
+  stroke-width: 4px;
+}
+
+.surface-hint {
+  background: #fff;
+  border-radius: 8px;
+  margin-top: 16px;
+  padding: 12px 16px;
+}
+
+.template-empty-state {
+  align-self: center;
+  background: #fff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  padding: 32px;
 }
