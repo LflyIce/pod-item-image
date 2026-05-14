@@ -62,6 +62,42 @@ describe('preview compositing', () => {
     expect(getPreviewRenderMode(product)).toBe('perspective-2d');
   });
 
+  it('uses POD template compositing when a mockup has a POD template selection', () => {
+    const product: Product = {
+      id: 'door-curtain',
+      name: 'Door curtain',
+      subtitle: '',
+      description: '',
+      category: '',
+      variants: [],
+      views: [],
+      mockup: {
+        frame: 'curtain',
+        background: '#fff',
+        podTemplate: {
+          templateId: '0001',
+          sceneId: '01'
+        },
+        warpPoints: {
+          src: [
+            { x: 0, y: 0 },
+            { x: 1, y: 0 },
+            { x: 1, y: 1 },
+            { x: 0, y: 1 }
+          ],
+          dst: [
+            { x: 10, y: 20 },
+            { x: 100, y: 15 },
+            { x: 105, y: 220 },
+            { x: 5, y: 210 }
+          ]
+        }
+      }
+    };
+
+    expect(getPreviewRenderMode(product)).toBe('pod-template-2d');
+  });
+
   it('uses the explicit texture polygon as the fixed clipping surface', () => {
     const product: Product = {
       id: 'door-curtain',

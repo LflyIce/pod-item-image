@@ -1,6 +1,6 @@
 import type { DesignLayer, Point, Product } from './types';
 
-export type PreviewRenderMode = 'perspective-2d' | 'layered-2d' | 'mapped-2d';
+export type PreviewRenderMode = 'pod-template-2d' | 'perspective-2d' | 'layered-2d' | 'mapped-2d';
 
 export type Pixel = {
   r: number;
@@ -14,6 +14,9 @@ export function shouldRenderSurfaceEffects(layers: DesignLayer[]) {
 }
 
 export function getPreviewRenderMode(product: Product): PreviewRenderMode {
+  if (product.mockup.podTemplate) {
+    return 'pod-template-2d';
+  }
   if (product.mockup.warpPoints?.dst.length === 4) {
     return 'perspective-2d';
   }

@@ -56,6 +56,10 @@ export type Product = {
     texturePolygon?: Point[];
     textureBlendMode?: 'source-over' | 'multiply' | 'screen' | 'overlay' | 'soft-light';
     textureOpacity?: number;
+    podTemplate?: {
+      templateId: string;
+      sceneId: string;
+    };
     /** 4-point perspective warp: maps source rect corners to destination quad on the base image */
     warpPoints?: {
       src: Point[];  // 4 corners of the source (editor print area) – usually a rectangle

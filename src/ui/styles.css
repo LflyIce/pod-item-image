@@ -765,3 +765,33 @@ button:disabled {
   justify-items: center;
   padding: 32px;
 }
+
+.pod-template-picker,
+.pod-scene-picker {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 10px;
+}
+
+.pod-scene-picker {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.pod-template-picker button,
+.pod-scene-picker button {
+  background: #ffffff;
+  border: 1px solid #d6dee9;
+  border-radius: 8px;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  min-height: 30px;
+}
+
+.pod-template-picker button.active,
+.pod-scene-picker button.active {
+  background: #0b5cff;
+  border-color: #0b5cff;
+  color: #ffffff;
+}

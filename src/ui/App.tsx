@@ -20,8 +20,10 @@ import {
 } from 'lucide-react';
 import { Group, Image as KonvaImage, Layer, Rect, Stage, Text as KonvaText, Transformer } from 'react-konva';
 import { getProductById, getVariant } from '../domain/catalog';
+import { createBezierSurfaceMesh } from '../domain/bezierSurface';
 import { normalOffset } from '../domain/normalDisplacement';
 import { PerspectiveTransform } from '../domain/perspectiveTransform';
+import { DEMO_POD_TEMPLATES, getDemoPodTemplate, podTemplateAssetPath, podTemplateScenePath, type PodFace } from '../domain/podTemplate';
 import { applyHighlightOverlay, getPreviewRenderMode, getPreviewSurfacePath, shadeDesignPixel, shouldRenderSurfaceEffects } from '../domain/previewCompositing';
 import {
   applyTemplate,
@@ -84,6 +86,21 @@ const sampleAssets = [
       encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1400" viewBox="0 0 900 1400">
       <rect width="900" height="1400" fill="#020617"/><path d="M450 0v1400" stroke="#475569" stroke-width="10"/><path d="M90 80h720v1240H90z" fill="none" stroke="#1e293b" stroke-width="34"/>
       <path d="M210 360c160-120 320 120 480 0M210 760c160-120 320 120 480 0" stroke="#f8fafc" stroke-width="14" fill="none" opacity=".28"/></svg>`)
+  },
+  {
+    id: 'pod-demo-0001',
+    name: 'POD示例 0001',
+    src: podTemplateAssetPath('images', '0001.jpg')
+  },
+  {
+    id: 'pod-demo-0002',
+    name: 'POD示例 0002',
+    src: podTemplateAssetPath('images', '0002.jpg')
+  },
+  {
+    id: 'pod-demo-0003',
+    name: 'POD示例 0003',
+    src: podTemplateAssetPath('images', '0003.jpg')
   }
 ];
 
@@ -133,6 +150,8 @@ export function App() {
   const [activeScreen, setActiveScreen] = useState<'designer' | 'template-manager'>('designer');
   const [mockupTemplates, setMockupTemplates] = useState<MockupTemplate[]>([]);
   const [activeMockupTemplateId, setActiveMockupTemplateId] = useState<string | null>(null);
+  const [activePodTemplateId, setActivePodTemplateId] = useState<string | null>('0001');
+  const [activePodSceneId, setActivePodSceneId] = useState<string>('01');
   const [project, setProject] = useState<DesignProject>(() => createBlankProject('door-curtain', 'curtain-white'));
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
   const [assetTab, setAssetTab] = useState<'templates' | 'mine' | 'favorites'>('templates');
@@ -144,8 +163,19 @@ export function App() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const product = useMemo(() => {
     const activeTemplate = mockupTemplates.find((template) => template.id === activeMockupTemplateId);
-    return activeTemplate ? applyMockupTemplate(baseProduct, activeTemplate) : baseProduct;
-  }, [activeMockupTemplateId, baseProduct, mockupTemplates]);
+    const mockupProduct = activeTemplate ? applyMockupTemplate(baseProduct, activeTemplate) : baseProduct;
+    if (!activePodTemplateId) return mockupProduct;
+    return {
+      ...mockupProduct,
+      mockup: {
+        ...mockupProduct.mockup,
+        podTemplate: {
+          templateId: activePodTemplateId,
+          sceneId: activePodSceneId
+        }
+      }
+    };
+  }, [activeMockupTemplateId, activePodSceneId, activePodTemplateId, baseProduct, mockupTemplates]);
 
   const activeVariant = getVariant(project.productId, project.variantId);
   const activeView = product.views[0];
@@ -153,6 +183,7 @@ export function App() {
   const selectedLayer = layers.find((layer) => layer.id === selectedLayerId);
   const quality = getQualityStatus(project);
   const previewUrl = useMemo(() => JSON.stringify(project), [project]);
+  const activePodTemplate = activePodTemplateId ? getDemoPodTemplate(activePodTemplateId) : undefined;
 
   const addImageAsset = (asset: AssetItem) => {
     const next = createImageLayer(project, asset.src, { width: asset.width, height: asset.height });
@@ -440,6 +471,39 @@ export function App() {
             全部实时渲染
             <div className="mode-pill"><span>3D</span><b>2D</b></div>
           </div>
+          <div className="pod-template-picker">
+            <button
+              className={!activePodTemplateId ? 'active' : ''}
+              onClick={() => setActivePodTemplateId(null)}
+            >
+              默认
+            </button>
+            {DEMO_POD_TEMPLATES.map((template) => (
+              <button
+                key={template.id}
+                className={activePodTemplateId === template.id ? 'active' : ''}
+                onClick={() => {
+                  setActivePodTemplateId(template.id);
+                  setActivePodSceneId(template.scenes[0]?.id ?? '01');
+                }}
+              >
+                {template.id}
+              </button>
+            ))}
+          </div>
+          {activePodTemplate ? (
+            <div className="pod-scene-picker">
+              {activePodTemplate.scenes.map((scene) => (
+                <button
+                  key={scene.id}
+                  className={activePodSceneId === scene.id ? 'active' : ''}
+                  onClick={() => setActivePodSceneId(scene.id)}
+                >
+                  {scene.id}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <button className="effect-preview-button" onClick={() => setPreviewOpen(true)} aria-label="预览效果图">
             <ProductPreview product={product} layers={layers} />
           </button>
@@ -691,6 +755,17 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   const warpPoints = product.mockup.warpPoints;
   const renderMode = getPreviewRenderMode(product);
   const renderSurfaceEffects = shouldRenderSurfaceEffects(layers);
+  const podTemplate = product.mockup.podTemplate ? getDemoPodTemplate(product.mockup.podTemplate.templateId) : undefined;
+  const podScene = podTemplate?.scenes.find((scene) => scene.id === product.mockup.podTemplate?.sceneId) ?? podTemplate?.scenes[0];
+  const podBaseImage = useImageElement(podTemplate && podScene ? podTemplateScenePath(podTemplate.id, `${podScene.id}.jpg`) : undefined);
+  const podEffectImage = useImageElement(
+    podTemplate && podScene?.effect ? podTemplateScenePath(podTemplate.id, `${podScene.id}.png`) : undefined
+  );
+  const podMaskSrcs = useMemo(
+    () => (podTemplate && podScene ? podScene.faces.map((face) => podTemplateScenePath(podTemplate.id, face.mask)) : []),
+    [podScene, podTemplate]
+  );
+  const { images: podMaskImages, loadCount: podMaskLoadCount } = useImageElements(podMaskSrcs);
 
   const layersJson = useMemo(() => JSON.stringify(layers.map(l => ({
     id: l.id, type: l.type, x: l.x, y: l.y, width: l.width, height: l.height,
@@ -734,49 +809,68 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     const img = loadedImages.current.get(l.id);
     return img && img.complete && img.naturalWidth > 0;
   });
+  const podImagesReady =
+    renderMode !== 'pod-template-2d' ||
+    Boolean(
+      podTemplate &&
+        podScene &&
+        podBaseImage &&
+        (!podScene.effect || podEffectImage) &&
+        podMaskSrcs.every((src) => {
+          const image = podMaskImages.get(src);
+          return image && image.complete && image.naturalWidth > 0;
+        })
+    );
 
   // ===== Rendering Pipeline: layered design surface + mask + lighting fusion =====
   useEffect(() => {
-    if (renderMode !== 'layered-2d' && renderMode !== 'perspective-2d') return;
-    if (!baseImage && product.mockup.baseImage) return;
     if (!allImagesReady && imageLayers.length > 0) return;
+    if (renderMode !== 'layered-2d' && renderMode !== 'perspective-2d' && renderMode !== 'pod-template-2d') return;
+    if (renderMode !== 'pod-template-2d' && !baseImage && product.mockup.baseImage) return;
+    if (renderMode === 'pod-template-2d' && !podImagesReady) return;
 
     const PVW = 500;
     const PVH = 500;
     const srcW = view.printArea.width;
     const srcH = view.printArea.height;
 
-    // Step 1: Render design layers to offscreen canvas
-    const designCanvas = document.createElement('canvas');
-    designCanvas.width = srcW;
-    designCanvas.height = srcH;
-    const dCtx = designCanvas.getContext('2d')!;
+    if (renderMode === 'pod-template-2d' && podTemplate && podScene && podBaseImage) {
+      const designCanvas = renderDesignLayersToCanvas(layers, loadedImages.current, view.printArea, podTemplate.width, podTemplate.height);
+      const canvas = document.createElement('canvas');
+      canvas.width = PVW;
+      canvas.height = PVH;
+      const ctx = canvas.getContext('2d')!;
+      ctx.fillStyle = '#f1f5f9';
+      ctx.fillRect(0, 0, PVW, PVH);
+      ctx.drawImage(podBaseImage, 0, 0, PVW, PVH);
 
-    const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
-    for (const layer of sorted) {
-      dCtx.save();
-      dCtx.globalAlpha = layer.opacity;
-      const lx = layer.x - view.printArea.x;
-      const ly = layer.y - view.printArea.y;
-      const cx = lx + layer.width / 2;
-      const cy = ly + layer.height / 2;
-      dCtx.translate(cx, cy);
-      dCtx.rotate((layer.rotation * Math.PI) / 180);
-      dCtx.scale(layer.scale, layer.scale);
-      if (layer.type === 'image') {
-        const img = loadedImages.current.get(layer.id);
-        if (img && img.complete && img.naturalWidth > 0) {
-          dCtx.drawImage(img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
+      for (const face of podScene.faces) {
+        const faceCanvas = cropDesignFace(designCanvas, face);
+        const warpedCanvas = document.createElement('canvas');
+        warpedCanvas.width = PVW;
+        warpedCanvas.height = PVH;
+        const warpedContext = warpedCanvas.getContext('2d')!;
+        renderBezierSurface(warpedContext, faceCanvas, face.ctrlPos, PVW, PVH);
+        const mask = podMaskImages.get(podTemplateScenePath(podTemplate.id, face.mask));
+        if (mask) {
+          applyAlphaMask(warpedContext, mask, PVW, PVH);
         }
-      } else if (layer.type === 'text') {
-        dCtx.font = `${layer.fontWeight === '700' ? 'bold' : 'normal'} ${layer.fontSize}px ${layer.fontFamily}`;
-        dCtx.fillStyle = layer.fill;
-        dCtx.textAlign = 'center';
-        dCtx.textBaseline = 'middle';
-        dCtx.fillText(layer.text, 0, 0);
+        ctx.save();
+        ctx.globalCompositeOperation = 'multiply';
+        ctx.drawImage(warpedCanvas, 0, 0);
+        ctx.restore();
       }
-      dCtx.restore();
+
+      if (podEffectImage) {
+        ctx.drawImage(podEffectImage, 0, 0, PVW, PVH);
+      }
+
+      setPreviewDataUrl(canvas.toDataURL());
+      return;
     }
+
+    // Step 1: Render design layers to offscreen canvas
+    const designCanvas = renderDesignLayersToCanvas(layers, loadedImages.current, view.printArea, srcW, srcH);
 
     // Step 2: Hicustom-style layered preview: one full design image clipped into the product surface.
     const surfaceCanvas = document.createElement('canvas');
@@ -845,6 +939,7 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     setPreviewDataUrl(canvas.toDataURL());
   }, [
     layersJson, loadCount, baseImage, textureImage, maskImage, highlightImage, normalImage,
+    podBaseImage, podEffectImage, podImagesReady, podMaskImages, podMaskLoadCount, podScene, podTemplate,
     textureBlendMode, textureOpacity, highlightOpacity, normalStrength, renderMode, warpPoints,
     renderSurfaceEffects, previewSurfacePath, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
     allImagesReady, imageLayers.length
@@ -931,6 +1026,129 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
       </Stage>
     </div>
   );
+}
+
+function renderDesignLayersToCanvas(
+  layers: DesignLayer[],
+  loadedImages: Map<string, HTMLImageElement>,
+  printArea: { x: number; y: number; width: number; height: number },
+  outputWidth: number,
+  outputHeight: number
+) {
+  const canvas = document.createElement('canvas');
+  canvas.width = outputWidth;
+  canvas.height = outputHeight;
+  const context = canvas.getContext('2d')!;
+  const scaleX = outputWidth / printArea.width;
+  const scaleY = outputHeight / printArea.height;
+
+  const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
+  for (const layer of sorted) {
+    context.save();
+    context.globalAlpha = layer.opacity;
+    const lx = (layer.x - printArea.x) * scaleX;
+    const ly = (layer.y - printArea.y) * scaleY;
+    const width = layer.width * scaleX;
+    const height = layer.height * scaleY;
+    const cx = lx + width / 2;
+    const cy = ly + height / 2;
+    context.translate(cx, cy);
+    context.rotate((layer.rotation * Math.PI) / 180);
+    context.scale(layer.scale, layer.scale);
+    if (layer.type === 'image') {
+      const img = loadedImages.get(layer.id);
+      if (img && img.complete && img.naturalWidth > 0) {
+        context.drawImage(img, -width / 2, -height / 2, width, height);
+      }
+    } else if (layer.type === 'text') {
+      context.font = `${layer.fontWeight === '700' ? 'bold' : 'normal'} ${layer.fontSize * scaleY}px ${layer.fontFamily}`;
+      context.fillStyle = layer.fill;
+      context.textAlign = 'center';
+      context.textBaseline = 'middle';
+      context.fillText(layer.text, 0, 0);
+    }
+    context.restore();
+  }
+
+  return canvas;
+}
+
+function cropDesignFace(designCanvas: HTMLCanvasElement, face: PodFace) {
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.round(face.width));
+  canvas.height = Math.max(1, Math.round(face.height));
+  const context = canvas.getContext('2d')!;
+  context.drawImage(designCanvas, face.x, face.y, face.width, face.height, 0, 0, canvas.width, canvas.height);
+  return canvas;
+}
+
+function renderBezierSurface(
+  context: CanvasRenderingContext2D,
+  sourceImage: HTMLCanvasElement,
+  ctrlPos: PodFace['ctrlPos'],
+  width: number,
+  height: number
+) {
+  const mesh = createBezierSurfaceMesh(ctrlPos, 28, 28, width, height);
+  const srcW = sourceImage.width;
+  const srcH = sourceImage.height;
+
+  for (const triangle of mesh.triangles) {
+    const p0 = mesh.points[triangle.i0];
+    const p1 = mesh.points[triangle.i1];
+    const p2 = mesh.points[triangle.i2];
+    const s0x = p0.u * srcW;
+    const s0y = p0.v * srcH;
+    const s1x = p1.u * srcW;
+    const s1y = p1.v * srcH;
+    const s2x = p2.u * srcW;
+    const s2y = p2.v * srcH;
+    const det = s0x * (s1y - s2y) + s1x * (s2y - s0y) + s2x * (s0y - s1y);
+    if (Math.abs(det) < 1e-10) continue;
+    const invDet = 1 / det;
+
+    const a = (p0.x * (s1y - s2y) + p1.x * (s2y - s0y) + p2.x * (s0y - s1y)) * invDet;
+    const c = (p0.x * (s2x - s1x) + p1.x * (s0x - s2x) + p2.x * (s1x - s0x)) * invDet;
+    const e = (p0.x * (s1x * s2y - s2x * s1y) + p1.x * (s2x * s0y - s0x * s2y) + p2.x * (s0x * s1y - s1x * s0y)) * invDet;
+    const b = (p0.y * (s1y - s2y) + p1.y * (s2y - s0y) + p2.y * (s0y - s1y)) * invDet;
+    const d = (p0.y * (s2x - s1x) + p1.y * (s0x - s2x) + p2.y * (s1x - s0x)) * invDet;
+    const f = (p0.y * (s1x * s2y - s2x * s1y) + p1.y * (s2x * s0y - s0x * s2y) + p2.y * (s0x * s1y - s1x * s0y)) * invDet;
+
+    context.save();
+    context.beginPath();
+    context.moveTo(p0.x, p0.y);
+    context.lineTo(p1.x, p1.y);
+    context.lineTo(p2.x, p2.y);
+    context.closePath();
+    context.clip();
+    context.setTransform(a, b, c, d, e, f);
+    context.drawImage(sourceImage, -0.5, -0.5, srcW + 1, srcH + 1);
+    context.restore();
+  }
+
+  context.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function applyAlphaMask(
+  context: CanvasRenderingContext2D,
+  maskImage: HTMLImageElement,
+  width: number,
+  height: number
+) {
+  const source = context.getImageData(0, 0, width, height);
+  const maskCanvas = document.createElement('canvas');
+  maskCanvas.width = width;
+  maskCanvas.height = height;
+  const maskContext = maskCanvas.getContext('2d');
+  if (!maskContext) return;
+  maskContext.drawImage(maskImage, 0, 0, width, height);
+  const mask = maskContext.getImageData(0, 0, width, height);
+
+  for (let index = 0; index < source.data.length; index += 4) {
+    source.data[index + 3] = Math.round((source.data[index + 3] * mask.data[index + 3]) / 255);
+  }
+
+  context.putImageData(source, 0, 0);
 }
 
 function applyNormalDisplacement(
@@ -1458,4 +1676,34 @@ function useImageElement(src?: string) {
     next.src = src;
   }, [src]);
   return image;
+}
+
+function useImageElements(srcs: string[]) {
+  const [loadCount, setLoadCount] = useState(0);
+  const images = useRef<Map<string, HTMLImageElement>>(new Map());
+  const srcKey = srcs.join('|');
+
+  useEffect(() => {
+    const expected = new Set(srcs);
+    let changed = false;
+    for (const key of images.current.keys()) {
+      if (!expected.has(key)) {
+        images.current.delete(key);
+        changed = true;
+      }
+    }
+    for (const src of srcs) {
+      if (!images.current.has(src)) {
+        const image = new window.Image();
+        image.crossOrigin = 'anonymous';
+        image.onload = () => setLoadCount((count) => count + 1);
+        image.src = src;
+        images.current.set(src, image);
+        changed = true;
+      }
+    }
+    if (changed) setLoadCount((count) => count + 1);
+  }, [srcKey]);
+
+  return { images: images.current, loadCount };
 }

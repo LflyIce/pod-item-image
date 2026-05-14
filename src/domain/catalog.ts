@@ -38,7 +38,7 @@ export const PRODUCTS: Product[] = [
         { x: 156, y: 400 }
       ],
       textureBlendMode: 'soft-light',
-      textureOpacity: 0.12,
+      textureOpacity: 0.24,
       warpPoints: {
         src: [
           { x: 0, y: 0 },
