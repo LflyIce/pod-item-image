@@ -44,6 +44,18 @@ const sampleAssets = [
       encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1400" viewBox="0 0 900 1400">
       <rect width="900" height="1400" fill="#020617"/><path d="M450 0v1400" stroke="#475569" stroke-width="10"/><path d="M90 80h720v1240H90z" fill="none" stroke="#1e293b" stroke-width="34"/>
       <path d="M210 360c160-120 320 120 480 0M210 760c160-120 320 120 480 0" stroke="#f8fafc" stroke-width="14" fill="none" opacity=".28"/></svg>`)
+  },
+  {
+    id: 'wave',
+    name: '海浪蔚蓝',
+    src:
+      'data:image/svg+xml;utf8,' +
+      encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1400" viewBox="0 0 900 1400">
+      <rect width="900" height="1400" fill="#0c4a6e"/>
+      <path d="M0 400c150-60 300 60 450 0s300-60 450 0v100H0z" fill="#0284c7" opacity=".6"/>
+      <path d="M0 520c150-60 300 60 450 0s300-60 450 0v100H0z" fill="#0369a1" opacity=".7"/>
+      <path d="M0 640c150-60 300 60 450 0s300-60 450 0v100H0z" fill="#075985" opacity=".8"/>
+      <path d="M0 760c150-60 300 60 450 0s300-60 450 0v640H0z" fill="#0c4a6e"/></svg>`)
   }
 ];
 
@@ -103,6 +115,38 @@ const templates: TemplateDef[] = [
     category: '通用',
     layers: [
       { type: 'text', text: 'Hello\nWorld', x: 100, y: 200, width: 260, height: 120, rotation: 0, scale: 1, opacity: 1, zIndex: 1, fontSize: 48, fontFamily: 'Inter, Arial, sans-serif', fill: '#0f172a', fontWeight: '700' }
+    ]
+  },
+  {
+    id: 'tshirt-beyourself',
+    name: 'T恤 - BE YOURSELF',
+    category: 'T恤',
+    layers: [
+      { type: 'text', text: 'BE YOURSELF', x: 140, y: 200, width: 220, height: 80, rotation: 0, scale: 1, opacity: 1, zIndex: 1, fontSize: 36, fontFamily: 'Inter, Arial, sans-serif', fill: '#ffffff', fontWeight: '700' }
+    ]
+  },
+  {
+    id: 'mug-mountain',
+    name: '马克杯 - 山野晨雾',
+    category: '马克杯',
+    layers: [
+      { type: 'image', assetUrl: sampleAssets[0].src, naturalWidth: 900, naturalHeight: 1400, x: 60, y: 60, width: 280, height: 280, rotation: 0, scale: 1, opacity: 1, zIndex: 1 }
+    ]
+  },
+  {
+    id: 'phonecase-wave',
+    name: '手机壳 - 海浪蔚蓝',
+    category: '手机壳',
+    layers: [
+      { type: 'image', assetUrl: sampleAssets[4].src, naturalWidth: 900, naturalHeight: 1400, x: 20, y: 80, width: 280, height: 460, rotation: 0, scale: 1, opacity: 1, zIndex: 1 }
+    ]
+  },
+  {
+    id: 'totebag-love',
+    name: '帆布袋 - LOVE',
+    category: '帆布袋',
+    layers: [
+      { type: 'text', text: 'LOVE', x: 110, y: 180, width: 200, height: 120, rotation: 0, scale: 1, opacity: 1, zIndex: 1, fontSize: 72, fontFamily: 'Georgia, serif', fill: '#e11d48', fontWeight: '700' }
     ]
   }
 ];

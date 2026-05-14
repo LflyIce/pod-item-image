@@ -1,4 +1,4 @@
-export type ProductId = 'door-curtain' | 'floor-mat';
+export type ProductId = 'door-curtain' | 'floor-mat' | 't-shirt' | 'mug' | 'phone-case' | 'tote-bag';
 
 export type ProductVariant = {
   id: string;

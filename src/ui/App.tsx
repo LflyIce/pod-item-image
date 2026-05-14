@@ -37,7 +37,8 @@ import { createHistory, pushState, undo as undoHistory, redo as redoHistory, can
 import { LeftPanel } from './left-panel/LeftPanel';
 import type { LeftTab } from './left-panel/LeftPanel';
 import { PropertyPanel } from './right-panel/PropertyPanel';
-import type { CartItem, DesignLayer, DesignProject, ImageLayer, Order, Product, TemplateLayer, TextLayer } from '../domain/types';
+import { ProductSelector } from './ProductSelector';
+import type { CartItem, DesignLayer, DesignProject, ImageLayer, Order, Product, ProductId, TemplateLayer, TextLayer } from '../domain/types';
 import type { HistoryState } from '../domain/history';
 
 /* ------------------------------------------------------------------ */
@@ -147,9 +148,30 @@ type AssetItem = {
 /*  App                                                                */
 /* ------------------------------------------------------------------ */
 export function App() {
-  const product = getProductById('door-curtain');
+  const [page, setPage] = useState<'selector' | 'editor'>('selector');
+  const [initialProductId, setInitialProductId] = useState<ProductId>('door-curtain');
+
+  const handleSelectProduct = (productId: ProductId) => {
+    setInitialProductId(productId);
+    setPage('editor');
+  };
+
+  const handleBackToSelector = () => {
+    setPage('selector');
+  };
+
+  if (page === 'selector') {
+    return <ProductSelector onSelect={handleSelectProduct} />;
+  }
+
+  return <EditorApp productId={initialProductId} onBack={handleBackToSelector} />;
+}
+
+function EditorApp({ productId, onBack }: { productId: ProductId; onBack: () => void }) {
+  const product = getProductById(productId);
+  const defaultVariantId = product.variants[0].id;
   const [history, setHistory] = useState<HistoryState>(() =>
-    createHistory(createBlankProject('door-curtain', 'curtain-white'))
+    createHistory(createBlankProject(productId, defaultVariantId))
   );
   const project = history.present;
   const setProject = useCallback((next: DesignProject) => {
@@ -383,13 +405,27 @@ export function App() {
       {/* ---- Top Bar ---- */}
       <header className="designer-topbar">
         <div className="topbar-left">
+          <button className="topbar-btn back-btn" onClick={onBack} title="返回产品选择">
+            ← 返回
+          </button>
+          <div className="divider" />
           <div className="logo-mark">POD</div>
           <span className="beta">BETA</span>
           <div className="divider" />
           <div className="top-product">
             <strong>{product.name}</strong>
-            <span style={{ backgroundColor: activeVariant.swatch, width: 14, height: 14, borderRadius: '50%', display: 'inline-block' }} />
-            {activeVariant.name}
+            <select
+              className="variant-select"
+              value={project.variantId}
+              onChange={(e) => {
+                const next = { ...project, variantId: e.target.value, updatedAt: new Date().toISOString() };
+                setProject(next);
+              }}
+            >
+              {product.variants.map((v) => (
+                <option key={v.id} value={v.id}>{v.name} - ¥{v.price}</option>
+              ))}
+            </select>
           </div>
         </div>
         <div className="topbar-center">
