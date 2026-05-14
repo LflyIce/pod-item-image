@@ -1,21 +1,21 @@
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
-import type { SceneContext } from 'konva/lib/Context';
+import { ChangeEvent, useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import {
-  ArrowUp,
   Download,
+  Eye,
   Grid3X3,
-  ImagePlus,
-  Layers,
-  PanelLeft,
+  Lock,
+  Minus,
   Plus,
+  Redo2,
   RotateCcw,
   Save,
-  Settings,
   ShoppingCart,
-  Sparkles,
   Trash2,
-  Type,
-  Upload
+  Undo2,
+  Unlock,
+  Upload,
+  ZoomIn,
+  ZoomOut
 } from 'lucide-react';
 import { Group, Image as KonvaImage, Layer, Rect, Stage, Text as KonvaText, Transformer } from 'react-konva';
 import { getProductById, getVariant } from '../domain/catalog';
@@ -33,8 +33,16 @@ import {
 } from '../domain/design';
 import { fitLayerToArea, setLayerTileMode } from '../domain/editorActions';
 import { addCartItem, createOrderFromCart } from '../domain/order';
+import { createHistory, pushState, undo as undoHistory, redo as redoHistory, canUndo, canRedo } from '../domain/history';
+import { LeftPanel } from './left-panel/LeftPanel';
+import type { LeftTab } from './left-panel/LeftPanel';
+import { PropertyPanel } from './right-panel/PropertyPanel';
 import type { CartItem, DesignLayer, DesignProject, ImageLayer, Order, Product, TemplateLayer, TextLayer } from '../domain/types';
+import type { HistoryState } from '../domain/history';
 
+/* ------------------------------------------------------------------ */
+/*  Sample assets (inline SVG to avoid external dependencies)          */
+/* ------------------------------------------------------------------ */
 const sampleAssets = [
   {
     id: 'mountain',
@@ -66,9 +74,9 @@ const sampleAssets = [
       encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1400" viewBox="0 0 900 1400">
       <rect width="900" height="1400" fill="#fff7ed"/>
       ${Array.from({ length: 22 })
-        .map((_, index) => {
-          const x = 90 + (index % 4) * 230;
-          const y = 100 + Math.floor(index / 4) * 230;
+        .map((_, i) => {
+          const x = 90 + (i % 4) * 230;
+          const y = 100 + Math.floor(i / 4) * 230;
           return `<g transform="translate(${x} ${y})"><circle r="58" fill="#fb7185"/><circle cx="56" r="36" fill="#f97316"/><circle cx="-48" cy="16" r="34" fill="#facc15"/><path d="M0 64c-24 58-60 88-118 104" stroke="#16a34a" stroke-width="18" fill="none" stroke-linecap="round"/></g>`;
         })
         .join('')}</svg>`)
@@ -81,39 +89,49 @@ const sampleAssets = [
       encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1400" viewBox="0 0 900 1400">
       <rect width="900" height="1400" fill="#020617"/><path d="M450 0v1400" stroke="#475569" stroke-width="10"/><path d="M90 80h720v1240H90z" fill="none" stroke="#1e293b" stroke-width="34"/>
       <path d="M210 360c160-120 320 120 480 0M210 760c160-120 320 120 480 0" stroke="#f8fafc" stroke-width="14" fill="none" opacity=".28"/></svg>`)
+  },
+  {
+    id: 'sunset',
+    name: '日落余晖',
+    src:
+      'data:image/svg+xml;utf8,' +
+      encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1400" viewBox="0 0 900 1400">
+      <defs><linearGradient id="sg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#fde68a"/><stop offset=".4" stop-color="#fdba74"/><stop offset="1" stop-color="#1e293b"/></linearGradient></defs>
+      <rect width="900" height="1400" fill="url(#sg)"/><circle cx="450" cy="420" r="120" fill="#fbbf24" opacity=".9"/>
+      <path d="M0 780 180 660 360 720 540 600 720 680 900 620v780H0z" fill="#334155" opacity=".8"/></svg>`)
+  },
+  {
+    id: 'wave',
+    name: '海浪蔚蓝',
+    src:
+      'data:image/svg+xml;utf8,' +
+      encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1400" viewBox="0 0 900 1400">
+      <rect width="900" height="1400" fill="#0c4a6e"/>
+      <path d="M0 400c150-60 300 60 450 0s300-60 450 0v100H0z" fill="#0284c7" opacity=".6"/>
+      <path d="M0 520c150-60 300 60 450 0s300-60 450 0v100H0z" fill="#0369a1" opacity=".7"/>
+      <path d="M0 640c150-60 300 60 450 0s300-60 450 0v100H0z" fill="#075985" opacity=".8"/>
+      <path d="M0 760c150-60 300 60 450 0s300-60 450 0v640H0z" fill="#0c4a6e"/></svg>`)
   }
 ];
 
+/* ------------------------------------------------------------------ */
+/*  Template presets                                                   */
+/* ------------------------------------------------------------------ */
 const productTemplates: TemplateLayer[] = [
   {
     type: 'image',
     assetUrl: sampleAssets[0].src,
     naturalWidth: 900,
     naturalHeight: 1400,
-    x: 32,
-    y: 38,
-    width: 366,
-    height: 614,
-    rotation: 0,
-    scale: 1,
-    opacity: 1,
-    zIndex: 1
+    x: 32, y: 38, width: 366, height: 614,
+    rotation: 0, scale: 1, opacity: 1, zIndex: 1
   },
   {
     type: 'text',
     text: 'WELCOME',
-    x: 72,
-    y: 540,
-    width: 286,
-    height: 64,
-    rotation: 0,
-    scale: 1,
-    opacity: 1,
-    zIndex: 2,
-    fontSize: 42,
-    fontFamily: 'Inter, Arial, sans-serif',
-    fill: '#ffffff',
-    fontWeight: '700'
+    x: 72, y: 540, width: 286, height: 64,
+    rotation: 0, scale: 1, opacity: 1, zIndex: 2,
+    fontSize: 42, fontFamily: 'Inter, Arial, sans-serif', fill: '#ffffff', fontWeight: '700'
   }
 ];
 
@@ -125,26 +143,69 @@ type AssetItem = {
   height: number;
 };
 
+/* ------------------------------------------------------------------ */
+/*  App                                                                */
+/* ------------------------------------------------------------------ */
 export function App() {
   const product = getProductById('door-curtain');
-  const [project, setProject] = useState<DesignProject>(() => createBlankProject('door-curtain', 'curtain-white'));
+  const [history, setHistory] = useState<HistoryState>(() =>
+    createHistory(createBlankProject('door-curtain', 'curtain-white'))
+  );
+  const project = history.present;
+  const setProject = useCallback((next: DesignProject) => {
+    setHistory((h: HistoryState) => pushState(h, next));
+  }, []);
+  const setProjectFn = useCallback((fn: (curr: DesignProject) => DesignProject) => {
+    setHistory((h: HistoryState) => pushState(h, fn(h.present)));
+  }, []);
+
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
-  const [assetTab, setAssetTab] = useState<'templates' | 'mine' | 'favorites'>('templates');
   const [myAssets, setMyAssets] = useState<AssetItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [showMoreActions, setShowMoreActions] = useState(false);
+  const [canvasBg, setCanvasBg] = useState<string>('#ffffff');
+  const [zoom, setZoom] = useState(1);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const activeVariant = getVariant(project.productId, project.variantId);
   const activeView = product.views[0];
   const layers = [...project.views.front.layers].sort((a, b) => a.zIndex - b.zIndex);
-  const selectedLayer = layers.find((layer) => layer.id === selectedLayerId);
+  const selectedLayer = layers.find(l => l.id === selectedLayerId);
   const quality = getQualityStatus(project);
-  const previewUrl = useMemo(() => JSON.stringify(project), [project]);
 
-  const addImageAsset = (asset: AssetItem) => {
+  /* ---- keyboard shortcuts ---- */
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          setHistory((h: HistoryState) => redoHistory(h));
+        } else {
+          setHistory((h: HistoryState) => undoHistory(h));
+        }
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'y') {
+        e.preventDefault();
+        setHistory((h: HistoryState) => redoHistory(h));
+      }
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedLayerId && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
+          setProject(removeLayer(project, selectedLayerId));
+          setSelectedLayerId(null);
+        }
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [selectedLayerId, project, setProject]);
+
+  /* ---- actions ---- */
+  const handleUndo = () => setHistory((h: HistoryState) => undoHistory(h));
+  const handleRedo = () => setHistory((h: HistoryState) => redoHistory(h));
+
+  const addImageAsset = (asset: { src: string; width: number; height: number }) => {
     const next = createImageLayer(project, asset.src, { width: asset.width, height: asset.height });
     setProject(next);
     setSelectedLayerId(next.views.front.layers.at(-1)?.id ?? null);
@@ -157,16 +218,15 @@ export function App() {
     reader.onload = () => {
       const image = new Image();
       image.onload = () => {
-        const asset = {
+        const asset: AssetItem = {
           id: `upload_${Date.now()}`,
           name: file.name,
           src: String(reader.result),
           width: image.naturalWidth,
           height: image.naturalHeight
         };
-        setMyAssets((current) => [asset, ...current]);
+        setMyAssets(prev => [asset, ...prev]);
         addImageAsset(asset);
-        setAssetTab('mine');
       };
       image.src = String(reader.result);
     };
@@ -174,42 +234,53 @@ export function App() {
     event.target.value = '';
   };
 
-  const addText = () => {
-    const next = createTextLayer(project, 'WELCOME');
+  const handleAddText = (text: string, style?: Partial<{ fontSize: number; fontWeight: string; fill: string }>) => {
+    let next = createTextLayer(project, text);
+    if (style) {
+      const layerId = next.views.front.layers.at(-1)?.id;
+      if (layerId) {
+        next = updateTextLayer(next, layerId, {
+          fontSize: style.fontSize,
+          fontWeight: style.fontWeight as '400' | '700',
+          fill: style.fill
+        });
+      }
+    }
     setProject(next);
     setSelectedLayerId(next.views.front.layers.at(-1)?.id ?? null);
   };
 
-  const applyDefaultTemplate = () => {
-    const next = applyTemplate(project, productTemplates);
+  const handleApplyTemplate = (tmpl: TemplateLayer[]) => {
+    const next = applyTemplate(project, tmpl);
     setProject(next);
     setSelectedLayerId(next.views.front.layers.at(-1)?.id ?? null);
   };
 
-  const updateLayerPosition = (layerId: string, x: number, y: number) => {
-    setProject((current) => ({
-      ...current,
+  const updateLayerGeometry = (
+    layerId: string,
+    geometry: Partial<Pick<DesignLayer, 'x' | 'y' | 'width' | 'height' | 'scale' | 'rotation' | 'opacity'>>
+  ) => {
+    setProjectFn((curr: DesignProject) => ({
+      ...curr,
       updatedAt: new Date().toISOString(),
       views: {
-        ...current.views,
         front: {
-          layers: current.views.front.layers.map((layer) => (layer.id === layerId ? { ...layer, x, y } : layer))
+          layers: curr.views.front.layers.map((l: DesignLayer) => l.id === layerId ? { ...l, ...geometry } : l)
         }
       }
     }));
   };
 
-  const updateLayerGeometry = (
-    layerId: string,
-    geometry: Partial<Pick<DesignLayer, 'x' | 'y' | 'width' | 'height' | 'scale' | 'rotation'>>
-  ) => {
-    setProject((current) => ({
-      ...current,
+  const handleUpdateSelectedLayer = (updates: Partial<DesignLayer>) => {
+    if (!selectedLayerId) return;
+    setProjectFn((curr: DesignProject) => ({
+      ...curr,
       updatedAt: new Date().toISOString(),
       views: {
-        ...current.views,
         front: {
-          layers: current.views.front.layers.map((layer) => (layer.id === layerId ? { ...layer, ...geometry } : layer))
+          layers: curr.views.front.layers.map((l: DesignLayer) =>
+            l.id === selectedLayerId ? { ...l, ...updates } as DesignLayer : l
+          )
         }
       }
     }));
@@ -221,49 +292,54 @@ export function App() {
     setSelectedLayerId(null);
   };
 
-  const scaleSelected = (scale: number) => {
-    if (!selectedLayerId || !selectedLayer) return;
-    setProject(resizeLayer(project, selectedLayerId, selectedLayer.scale + scale));
-  };
-
-  const updateSelectedLayer = (updater: (layer: DesignLayer) => DesignLayer) => {
-    if (!selectedLayerId) return;
-    setProject((current) => ({
-      ...current,
+  const handleToggleVisibility = (id: string) => {
+    setProjectFn((curr: DesignProject) => ({
+      ...curr,
       updatedAt: new Date().toISOString(),
       views: {
-        ...current.views,
         front: {
-          layers: current.views.front.layers.map((layer) => (layer.id === selectedLayerId ? updater(layer) : layer))
+          layers: curr.views.front.layers.map((l: DesignLayer) =>
+            l.id === id ? { ...l, opacity: l.opacity > 0 ? 0 : 1 } : l
+          )
         }
       }
     }));
   };
 
-  const runToolbarAction = (action: 'maximize' | 'fill' | 'tile' | 'mirror') => {
-    if (!selectedLayer) return;
-    if (action === 'maximize') {
-      updateSelectedLayer((layer) => {
-        const next = fitLayerToArea(layer, activeView.printArea, 'cover');
-        return next.type === 'image' ? { ...next, tileMode: 'none' } : next;
-      });
-    }
-    if (action === 'fill') {
-      updateSelectedLayer((layer) => {
-        const next = fitLayerToArea(layer, activeView.printArea, 'stretch');
-        return next.type === 'image' ? { ...next, tileMode: 'none' } : next;
-      });
-    }
-    if (action === 'tile' && selectedLayer.type === 'image') {
-      updateSelectedLayer((layer) => (layer.type === 'image' ? fitLayerToArea(setLayerTileMode(layer, 'basic'), activeView.printArea, 'stretch') : layer));
-    }
-    if (action === 'mirror' && selectedLayer.type === 'image') {
-      updateSelectedLayer((layer) => (layer.type === 'image' ? fitLayerToArea(setLayerTileMode(layer, 'mirror'), activeView.printArea, 'stretch') : layer));
-    }
+  const handleToggleLock = (_id: string) => {
+    // Lock/unlock is UI-only for now, stored as draggable flag
+  };
+
+  const handleMoveUp = (id: string) => {
+    setProjectFn((curr: DesignProject) => {
+      const ls = [...curr.views.front.layers];
+      const idx = ls.findIndex((l: DesignLayer) => l.id === id);
+      if (idx < 0 || idx >= ls.length - 1) return curr;
+      [ls[idx], ls[idx + 1]] = [ls[idx + 1], ls[idx]];
+      return {
+        ...curr,
+        updatedAt: new Date().toISOString(),
+        views: { front: { layers: ls.map((l: DesignLayer, i: number) => ({ ...l, zIndex: i + 1 })) } }
+      };
+    });
+  };
+
+  const handleMoveDown = (id: string) => {
+    setProjectFn((curr: DesignProject) => {
+      const ls = [...curr.views.front.layers];
+      const idx = ls.findIndex((l: DesignLayer) => l.id === id);
+      if (idx <= 0) return curr;
+      [ls[idx], ls[idx - 1]] = [ls[idx - 1], ls[idx]];
+      return {
+        ...curr,
+        updatedAt: new Date().toISOString(),
+        views: { front: { layers: ls.map((l: DesignLayer, i: number) => ({ ...l, zIndex: i + 1 })) } }
+      };
+    });
   };
 
   const addToCart = () => {
-    setCart(addCartItem(cart, project, 1, previewUrl));
+    setCart(addCartItem(cart, project, 1, JSON.stringify(project)));
   };
 
   const submitOrder = () => {
@@ -271,6 +347,7 @@ export function App() {
     const order = createOrderFromCart(cart, '测试客户');
     setOrders([order, ...orders]);
     setCart([]);
+    setCartOpen(false);
   };
 
   const downloadProductionJson = (order: Order) => {
@@ -283,549 +360,405 @@ export function App() {
     URL.revokeObjectURL(url);
   };
 
-  const visibleAssets = assetTab === 'mine' ? myAssets : sampleAssets.map((asset) => ({ ...asset, width: 900, height: 1400 }));
+  const handleSetBackground = (color: string) => {
+    setCanvasBg(color);
+  };
 
+  const handleExportDesign = () => {
+    const stageEl = document.querySelector('.canvas-stage canvas') as HTMLCanvasElement | null;
+    if (!stageEl) return;
+    const dataURL = stageEl.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = dataURL;
+    link.download = `design-${project.id}.png`;
+    link.click();
+  };
+
+  /* ---- render ---- */
   return (
     <main className="designer-app">
+      {/* Hidden file input */}
+      <input ref={fileInputRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={onUpload} />
+
+      {/* ---- Top Bar ---- */}
       <header className="designer-topbar">
-        <div className="logo-mark">Hi</div>
-        <span className="beta">BETA</span>
-        <div className="divider" />
-        <button className="icon-text" onClick={addText}>
-          <Type size={16} />
-          添加文字
-        </button>
-        <button className="icon-text" onClick={() => fileInputRef.current?.click()}>
-          <Upload size={16} />
-          上传图片
-        </button>
-        <div className="top-product">
-          <img src="/assets/door-curtain-base.png" alt="" />
-          <strong>门帘34x56in（两片拼接）</strong>
-          <span style={{ backgroundColor: activeVariant.swatch }} />
-          {activeVariant.name}
+        <div className="topbar-left">
+          <div className="logo-mark">POD</div>
+          <span className="beta">BETA</span>
+          <div className="divider" />
+          <div className="top-product">
+            <strong>{product.name}</strong>
+            <span style={{ backgroundColor: activeVariant.swatch, width: 14, height: 14, borderRadius: '50%', display: 'inline-block' }} />
+            {activeVariant.name}
+          </div>
         </div>
-        <button className="soft-button">去结算</button>
-        <button className="soft-button" onClick={addToCart}>加入购物车</button>
-        <button className="save-button"><Save size={15} />保存</button>
+        <div className="topbar-center">
+          <button className="topbar-btn" onClick={handleUndo} disabled={!canUndo(history)} title="撤销 (Ctrl+Z)">
+            <Undo2 size={16} />
+          </button>
+          <button className="topbar-btn" onClick={handleRedo} disabled={!canRedo(history)} title="重做 (Ctrl+Y)">
+            <Redo2 size={16} />
+          </button>
+          <div className="divider" />
+          <button className="icon-text" onClick={() => handleAddText('标题文字', { fontSize: 32, fontWeight: '700', fill: '#0f172a' })}>
+            文字
+          </button>
+          <button className="icon-text" onClick={() => fileInputRef.current?.click()}>
+            <Upload size={14} /> 上传
+          </button>
+        </div>
+        <div className="topbar-right">
+          <button className="icon-text" onClick={() => setPreviewOpen(true)}>
+            <Eye size={14} /> 预览
+          </button>
+          <button className="icon-text" onClick={handleExportDesign}>
+            <Download size={14} /> 导出
+          </button>
+          <button className="icon-text" onClick={addToCart}>
+            <ShoppingCart size={14} /> 加购
+          </button>
+          <button className="primary-btn" onClick={() => setCartOpen(true)}>
+            <ShoppingCart size={14} /> 结算 ({cart.length})
+          </button>
+        </div>
       </header>
 
-      <section className="designer-workspace">
-        <aside className="rail">
-          <RailItem active icon={<ImagePlus size={22} />} label="图库" />
-          <RailItem icon={<Sparkles size={22} />} label="AI作图" badge="NEW" />
-          <RailItem icon={<Grid3X3 size={22} />} label="背景" />
-          <div className="rail-spacer" />
-          <RailItem icon={<Settings size={22} />} label="" />
-        </aside>
+      {/* ---- Body ---- */}
+      <section className="designer-body">
+        {/* Left Panel */}
+        <LeftPanel
+          sampleAssets={sampleAssets}
+          myAssets={myAssets}
+          onAddImageAsset={addImageAsset}
+          onUploadClick={() => fileInputRef.current?.click()}
+          onApplyTemplate={handleApplyTemplate}
+          onAddText={handleAddText}
+          backgroundColor={canvasBg}
+          onSetBackground={handleSetBackground}
+          layers={layers}
+          selectedLayerId={selectedLayerId}
+          onSelectLayer={setSelectedLayerId}
+          onToggleVisibility={handleToggleVisibility}
+          onToggleLock={handleToggleLock}
+          onMoveUp={handleMoveUp}
+          onMoveDown={handleMoveDown}
+          onDeleteLayer={(id) => { setProject(removeLayer(project, id)); if (id === selectedLayerId) setSelectedLayerId(null); }}
+        />
 
-        <aside className="asset-panel">
-          <div className="asset-tabs">
-            <button className={assetTab === 'templates' ? 'active' : ''} onClick={() => setAssetTab('templates')}>素材模板</button>
-            <button className={assetTab === 'mine' ? 'active' : ''} onClick={() => setAssetTab('mine')}>我的图片</button>
-            <button className={assetTab === 'favorites' ? 'active' : ''} onClick={() => setAssetTab('favorites')}>收藏图片</button>
+        {/* Canvas Area */}
+        <div className="canvas-area">
+          <div className="canvas-wrapper" style={{ transform: `scale(${zoom})` }}>
+            <Stage
+              className="canvas-stage"
+              width={activeView.canvas.width}
+              height={activeView.canvas.height}
+              onClick={(e) => {
+                if (e.target === e.target.getStage()) setSelectedLayerId(null);
+              }}
+            >
+              <Layer>
+                {/* Canvas background */}
+                <Rect
+                  x={0} y={0}
+                  width={activeView.canvas.width}
+                  height={activeView.canvas.height}
+                  fill={canvasBg}
+                />
+                {/* Print area border */}
+                <Rect
+                  x={activeView.printArea.x}
+                  y={activeView.printArea.y}
+                  width={activeView.printArea.width}
+                  height={activeView.printArea.height}
+                  stroke="#cbd5e1"
+                  strokeWidth={1}
+                  dash={[4, 4]}
+                  listening={false}
+                />
+                {/* Render layers */}
+                {layers.map(layer => (
+                  <DesignLayerRender
+                    key={layer.id}
+                    layer={layer}
+                    isSelected={layer.id === selectedLayerId}
+                    onSelect={() => setSelectedLayerId(layer.id)}
+                    onChange={(geo) => updateLayerGeometry(layer.id, geo)}
+                  />
+                ))}
+                {/* Transformer */}
+                {selectedLayerId && (
+                  <TransformerWrapper
+                    selectedLayerId={selectedLayerId}
+                    layers={layers}
+                    onChange={updateLayerGeometry}
+                  />
+                )}
+              </Layer>
+            </Stage>
           </div>
-          <div className="search-row">
-            <input placeholder="图片名称/编号/标签" />
-            <button>分类</button>
-          </div>
-          <div className="sort-row">
-            <button>综合排序</button>
-            <button>上新时间</button>
-            <PanelLeft size={16} />
-          </div>
-          <div className="material-grid">
-            {visibleAssets.length === 0 ? (
-              <div className="empty-material">上传图片后会显示在这里。</div>
-            ) : (
-              visibleAssets.map((asset) => (
-                <button key={asset.id} className="material-card" onClick={() => addImageAsset(asset)}>
-                  <img src={asset.src} alt={asset.name} />
-                </button>
-              ))
-            )}
-          </div>
-          <button className="upload-strip" onClick={() => fileInputRef.current?.click()}>+ 上传本地图片</button>
-          <button className="upload-strip" onClick={applyDefaultTemplate}>应用整套模板</button>
-          <input ref={fileInputRef} className="hidden-input" type="file" accept="image/png,image/jpeg" onChange={onUpload} />
-        </aside>
+        </div>
 
-        <section className="editor-stage">
-          <div className="side-view-chip">A面</div>
-          <div className="editor-toolbar">
-            <button onClick={() => runToolbarAction('maximize')} disabled={!selectedLayerId}>最大化</button>
-            <button onClick={() => runToolbarAction('fill')} disabled={!selectedLayerId}>铺满</button>
-            <button onClick={() => runToolbarAction('tile')} disabled={selectedLayer?.type !== 'image'}>基础平铺</button>
-            <button onClick={() => runToolbarAction('mirror')} disabled={selectedLayer?.type !== 'image'}>镜像平铺</button>
-            <button onClick={() => setShowMoreActions((value) => !value)}>更多</button>
-            {showMoreActions ? (
-              <div className="more-menu">
-                <button onClick={addText}>添加文字</button>
-                <button onClick={deleteSelected} disabled={!selectedLayerId}>删除图层</button>
-                <button onClick={() => fileInputRef.current?.click()}>上传替换</button>
-              </div>
-            ) : null}
-          </div>
-          <KonvaEditor
-            product={product}
-            layers={layers}
-            selectedLayerId={selectedLayerId}
-            onSelect={setSelectedLayerId}
-            onMove={updateLayerPosition}
-            onTransform={updateLayerGeometry}
-          />
-          <div className="editor-bottom">
-            <div className={`print-quality ${quality.label === '偏低' ? 'bad' : ''}`}>
-              <strong>{quality.label}</strong>
-              当前印刷质量
-            </div>
-            <span>推荐图片素材尺寸：{activeView.recommendedPixels.width}*{activeView.recommendedPixels.height}px</span>
-            <div className="zoom-controls">
-              <button onClick={() => scaleSelected(-0.1)} disabled={!selectedLayerId}>-</button>
-              <button onClick={() => scaleSelected(0.1)} disabled={!selectedLayerId}>+</button>
-              <button onClick={deleteSelected} disabled={!selectedLayerId}><Trash2 size={15} /></button>
-            </div>
-          </div>
-          <LayerInspector
+        {/* Right Panel */}
+        <aside className="right-panel">
+          <PropertyPanel
             layer={selectedLayer}
-            onScaleUp={() => scaleSelected(0.1)}
-            onScaleDown={() => scaleSelected(-0.1)}
-            onTextChange={(updates) => selectedLayerId && setProject(updateTextLayer(project, selectedLayerId, updates))}
+            product={product}
+            onUpdateLayer={handleUpdateSelectedLayer}
           />
-        </section>
-
-        <aside className="effect-panel">
-          <div className="preview-switch">
-            <span className="toggle-dot" />
-            全部实时渲染
-            <div className="mode-pill"><span>3D</span><b>2D</b></div>
-          </div>
-          <button className="effect-preview-button" onClick={() => setPreviewOpen(true)} aria-label="预览效果图">
-            <ProductPreview product={product} layers={layers} />
-          </button>
-          <div className="effect-thumbs">
-            <button className="active" onClick={() => setPreviewOpen(true)}><img src="/assets/door-curtain-base.png" alt="" /><span>效果图1</span></button>
-            {sampleAssets.slice(0, 3).map((asset) => (
-              <button key={asset.id}><img src={asset.src} alt="" /></button>
-            ))}
-            <button className="custom-board">自定义底板</button>
-          </div>
-          <div className="cart-box compact">
-            {cart.length === 0 ? <p>购物车为空，完成设计后加入购物车。</p> : <p>购物车：{cart.length} 件</p>}
-            <button className="save-button full" onClick={submitOrder} disabled={cart.length === 0}>提交订单</button>
-          </div>
-          {orders.map((order) => (
-            <button key={order.id} className="download-order" onClick={() => downloadProductionJson(order)}>
-              <Download size={15} /> 下载生产文件
-            </button>
-          ))}
         </aside>
       </section>
-      {previewOpen ? (
-        <div className="preview-modal-backdrop" onMouseDown={() => setPreviewOpen(false)}>
-          <section className="preview-modal" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label="效果图预览">
-            <button className="preview-modal-close" onClick={() => setPreviewOpen(false)} aria-label="关闭预览">×</button>
-            <ProductPreview product={product} layers={layers} />
-          </section>
+
+      {/* ---- Bottom Bar ---- */}
+      <footer className="designer-bottombar">
+        <div className="bottombar-left">
+          <button className="topbar-btn" onClick={() => setZoom(z => Math.max(0.25, z - 0.1))}><ZoomOut size={14} /></button>
+          <span className="zoom-label">{Math.round(zoom * 100)}%</span>
+          <button className="topbar-btn" onClick={() => setZoom(z => Math.min(2, z + 0.1))}><ZoomIn size={14} /></button>
+          <button className="topbar-btn" onClick={() => setZoom(1)} title="重置缩放"><RotateCcw size={14} /></button>
         </div>
-      ) : null}
+        <div className="bottombar-center">
+          <span>画布 {activeView.canvas.width}×{activeView.canvas.height}</span>
+          <span className="divider-v" />
+          <span>印刷区 {activeView.printArea.width}×{activeView.printArea.height}</span>
+          <span className="divider-v" />
+          <span>推荐 {activeView.recommendedPixels.width}×{activeView.recommendedPixels.height}</span>
+        </div>
+        <div className="bottombar-right">
+          <QualityBadge quality={quality} />
+        </div>
+      </footer>
+
+      {/* ---- Preview Modal ---- */}
+      {previewOpen && (
+        <div className="modal-overlay" onClick={() => setPreviewOpen(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>设计预览</h3>
+              <button onClick={() => setPreviewOpen(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <PreviewCanvas project={project} product={product} canvasBg={canvasBg} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ---- Cart Drawer ---- */}
+      {cartOpen && (
+        <div className="modal-overlay" onClick={() => setCartOpen(false)}>
+          <div className="modal-content cart-drawer" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>购物车 ({cart.length})</h3>
+              <button onClick={() => setCartOpen(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              {cart.length === 0 ? (
+                <div className="cart-empty">购物车是空的</div>
+              ) : (
+                <>
+                  <div className="cart-list">
+                    {cart.map((item, i) => (
+                      <div key={item.id} className="cart-item">
+                        <span>{item.productId} - {item.variantId}</span>
+                        <span>×{item.quantity}</span>
+                        <button onClick={() => setCart(cart.filter((_, j) => j !== i))}><Trash2 size={14} /></button>
+                      </div>
+                    ))}
+                  </div>
+                  <button className="primary-btn full-width" onClick={submitOrder}>提交订单</button>
+                </>
+              )}
+              {orders.length > 0 && (
+                <div className="order-history">
+                  <h4>历史订单</h4>
+                  {orders.map(order => (
+                    <div key={order.id} className="order-item">
+                      <span>{order.id.slice(0, 12)}...</span>
+                      <span>{order.items.length} 件</span>
+                      <button onClick={() => downloadProductionJson(order)}><Download size={14} /> JSON</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
 
-function RailItem({ icon, label, active, badge }: { icon: React.ReactNode; label: string; active?: boolean; badge?: string }) {
-  return (
-    <button className={active ? 'rail-item active' : 'rail-item'}>
-      <span>{icon}</span>
-      {badge ? <em>{badge}</em> : null}
-      {label}
-    </button>
-  );
-}
+/* ================================================================== */
+/*  Sub-components                                                     */
+/* ================================================================== */
 
-function KonvaEditor({
-  product,
-  layers,
-  selectedLayerId,
-  onSelect,
-  onMove,
-  onTransform
-}: {
-  product: Product;
-  layers: DesignLayer[];
-  selectedLayerId: string | null;
-  onSelect: (layerId: string | null) => void;
-  onMove: (layerId: string, x: number, y: number) => void;
-  onTransform: (
-    layerId: string,
-    geometry: Partial<Pick<DesignLayer, 'x' | 'y' | 'width' | 'height' | 'scale' | 'rotation'>>
-  ) => void;
-}) {
-  const view = product.views[0];
+function QualityBadge({ quality }: { quality: ReturnType<typeof getQualityStatus> }) {
+  const color = quality.label === '优秀' ? '#22c55e' : quality.label === '可用' ? '#f59e0b' : '#ef4444';
   return (
-    <div className="print-canvas">
-      <Stage width={view.canvas.width} height={view.canvas.height} onMouseDown={(event) => event.target === event.target.getStage() && onSelect(null)}>
-        <Layer>
-          <Rect width={view.canvas.width} height={view.canvas.height} fill="#ffffff" shadowBlur={18} shadowColor="rgba(15,23,42,.12)" />
-
-          {layers.map((layer) => (
-            <EditableLayer
-              key={layer.id}
-              layer={layer}
-              selected={layer.id === selectedLayerId}
-              onSelect={() => onSelect(layer.id)}
-              onMove={(x, y) => onMove(layer.id, x, y)}
-              onTransform={(geometry) => onTransform(layer.id, geometry)}
-            />
-          ))}
-          {layers.length === 0 ? <UploadPlaceholder x={view.printArea.x} y={view.printArea.y} width={view.printArea.width} height={view.printArea.height} /> : null}
-        </Layer>
-      </Stage>
+    <div className="quality-badge" style={{ borderColor: color }}>
+      <span className="quality-dot" style={{ backgroundColor: color }} />
+      <span>{quality.label}</span>
+      <span className="quality-score">{quality.score}</span>
     </div>
   );
 }
 
-function ProductPreview({ product, layers }: { product: Product; layers: DesignLayer[] }) {
-  const view = product.views[0];
-  const baseImage = useImageElement(product.mockup.baseImage);
-  const textureImage = useImageElement(product.mockup.textureImage);
-  const maskImage = useImageElement('/assets/curtain-mask.png');
-  const lightingImage = useImageElement('/assets/curtain-lighting.png');
-  const textureArea = product.mockup.textureArea ?? view.printArea;
-  const texturePolygon = product.mockup.texturePolygon;
-  const textureBlendMode = product.mockup.textureBlendMode ?? 'source-over';
-  const textureOpacity = product.mockup.textureOpacity ?? 0.38;
-  const warpPoints = product.mockup.warpPoints;
-
-  const layersJson = useMemo(() => JSON.stringify(layers.map(l => ({
-    id: l.id, type: l.type, x: l.x, y: l.y, width: l.width, height: l.height,
-    rotation: l.rotation, scale: l.scale, opacity: l.opacity, zIndex: l.zIndex,
-    assetUrl: l.type === 'image' ? l.assetUrl : undefined,
-    tileMode: l.type === 'image' ? l.tileMode : undefined,
-    text: l.type === 'text' ? l.text : undefined,
-    fontSize: l.type === 'text' ? l.fontSize : undefined,
-    fontFamily: l.type === 'text' ? l.fontFamily : undefined,
-    fill: l.type === 'text' ? l.fill : undefined,
-    fontWeight: l.type === 'text' ? l.fontWeight : undefined,
-  }))), [layers]);
-
-  const [previewDataUrl, setPreviewDataUrl] = useState<string>('');
-  const previewImage = useImageElement(previewDataUrl || undefined);
-
-  const [loadCount, setLoadCount] = useState(0);
-  const loadedImages = useRef<Map<string, HTMLImageElement>>(new Map());
-  const imageLayers = layers.filter((l): l is ImageLayer => l.type === 'image');
+function TransformerWrapper({
+  selectedLayerId,
+  layers,
+  onChange
+}: {
+  selectedLayerId: string;
+  layers: DesignLayer[];
+  onChange: (layerId: string, geo: Partial<DesignLayer>) => void;
+}) {
+  const trRef = useRef<any>(null);
 
   useEffect(() => {
-    let changed = false;
-    const currentIds = new Set(imageLayers.map(l => l.id));
-    for (const key of loadedImages.current.keys()) {
-      if (!currentIds.has(key)) { loadedImages.current.delete(key); changed = true; }
+    if (!trRef.current) return;
+    const stage = trRef.current.getStage();
+    if (!stage) return;
+    const node = stage.findOne(`#${selectedLayerId}`);
+    if (node) {
+      trRef.current.nodes([node]);
+      trRef.current.getLayer()?.batchDraw();
     }
-    for (const layer of imageLayers) {
-      if (!loadedImages.current.has(layer.id) || loadedImages.current.get(layer.id)!.src !== layer.assetUrl) {
-        changed = true;
-        const img = new window.Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => { setLoadCount(c => c + 1); };
-        img.src = layer.assetUrl;
-        loadedImages.current.set(layer.id, img);
-      }
-    }
-    if (changed) setLoadCount(c => c + 1);
-  }, [imageLayers.map(l => l.id).join(','), imageLayers.map(l => l.assetUrl).join(',')]);
+  }, [selectedLayerId, layers]);
 
-  const allImagesReady = imageLayers.every(l => {
-    const img = loadedImages.current.get(l.id);
-    return img && img.complete && img.naturalWidth > 0;
-  });
+  return (
+    <Transformer
+      ref={trRef}
+      boundBoxFunc={(oldBox, newBox) => {
+        if (newBox.width < 10 || newBox.height < 10) return oldBox;
+        return newBox;
+      }}
+      onTransformEnd={(e) => {
+        const node = e.target;
+        onChange(selectedLayerId, {
+          x: node.x(),
+          y: node.y(),
+          width: Math.max(10, node.width() * node.scaleX()),
+          height: Math.max(10, node.height() * node.scaleY()),
+          scale: 1,
+          rotation: node.rotation()
+        });
+        node.scaleX(1);
+        node.scaleY(1);
+      }}
+    />
+  );
+}
 
-  // ===== Rendering Pipeline: SAM2 mask + Perspective Warp + Lighting Fusion =====
-  useEffect(() => {
-    if (!warpPoints || warpPoints.src.length !== 4 || warpPoints.dst.length !== 4) return;
-    if (!baseImage && product.mockup.baseImage) return;
-    if (!allImagesReady && imageLayers.length > 0) return;
-
-    const PVW = 500;
-    const PVH = 500;
-    const srcW = view.printArea.width;
-    const srcH = view.printArea.height;
-
-    // Step 1: Render design layers to offscreen canvas
-    const designCanvas = document.createElement('canvas');
-    designCanvas.width = srcW;
-    designCanvas.height = srcH;
-    const dCtx = designCanvas.getContext('2d')!;
-
-    const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
-    for (const layer of sorted) {
-      dCtx.save();
-      dCtx.globalAlpha = layer.opacity;
-      const lx = layer.x - view.printArea.x;
-      const ly = layer.y - view.printArea.y;
-      const cx = lx + layer.width / 2;
-      const cy = ly + layer.height / 2;
-      dCtx.translate(cx, cy);
-      dCtx.rotate((layer.rotation * Math.PI) / 180);
-      dCtx.scale(layer.scale, layer.scale);
-      if (layer.type === 'image') {
-        const img = loadedImages.current.get(layer.id);
-        if (img && img.complete && img.naturalWidth > 0) {
-          dCtx.drawImage(img, -layer.width / 2, -layer.height / 2, layer.width, layer.height);
-        }
-      } else if (layer.type === 'text') {
-        dCtx.font = `${layer.fontWeight === '700' ? 'bold' : 'normal'} ${layer.fontSize}px ${layer.fontFamily}`;
-        dCtx.fillStyle = layer.fill;
-        dCtx.textAlign = 'center';
-        dCtx.textBaseline = 'middle';
-        dCtx.fillText(layer.text, 0, 0);
-      }
-      dCtx.restore();
-    }
-
-    // Step 2: Warp design onto product area using perspective transform
-    const warpedCanvas = document.createElement('canvas');
-    warpedCanvas.width = PVW;
-    warpedCanvas.height = PVH;
-    const wCtx = warpedCanvas.getContext('2d')!;
-
-    const srcFlat = warpPoints.src.flatMap((p) => [p.x * srcW, p.y * srcH]);
-    const dstFlat = warpPoints.dst.flatMap((p) => [p.x, p.y]);
-    try {
-      const transform = new PerspectiveTransform(srcFlat, dstFlat);
-      const mesh = WarpMesh.create(srcW, srcH, PVW, PVH, transform, 16, 16);
-      mesh.render(wCtx, designCanvas, srcW, srcH);
-    } catch {
-      const d = warpPoints.dst;
-      wCtx.drawImage(designCanvas, d[0].x, d[0].y, d[2].x - d[0].x, d[2].y - d[0].y);
-    }
-
-    // Step 3: Apply mask — only keep pixels inside the curtain area
-    if (maskImage) {
-      wCtx.globalCompositeOperation = 'destination-in';
-      wCtx.drawImage(maskImage, 0, 0, PVW, PVH);
-      wCtx.globalCompositeOperation = 'source-over';
-    }
-
-    // Step 4: Apply lighting fusion — multiply folds onto the warped design
-    if (lightingImage) {
-      wCtx.globalCompositeOperation = 'multiply';
-      wCtx.drawImage(lightingImage, 0, 0, PVW, PVH);
-      wCtx.globalCompositeOperation = 'source-over';
-    }
-
-    // Step 5: Composite everything onto final canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = PVW;
-    canvas.height = PVH;
-    const ctx = canvas.getContext('2d')!;
-
-    // Background
-    ctx.fillStyle = '#f1f5f9';
-    ctx.fillRect(0, 0, PVW, PVH);
-
-    // Base product image (frame + empty curtain)
-    if (baseImage) {
-      ctx.drawImage(baseImage, 0, 0, PVW, PVH);
-    }
-
-    // Overlay the warped design with mask + lighting
-    ctx.drawImage(warpedCanvas, 0, 0);
-
-    // Step 6: Add fold overlay for extra realism (screen blend)
-    if (textureImage) {
-      ctx.save();
-      if (texturePolygon && texturePolygon.length >= 3) {
-        ctx.beginPath();
-        ctx.moveTo(texturePolygon[0].x, texturePolygon[0].y);
-        for (const point of texturePolygon.slice(1)) {
-          ctx.lineTo(point.x, point.y);
-        }
-        ctx.closePath();
-        ctx.clip();
-      }
-      ctx.globalAlpha = 0.5;
-      ctx.globalCompositeOperation = 'overlay';
-      ctx.drawImage(textureImage, 0, 0, PVW, PVH);
-      ctx.restore();
-    }
-
-    setPreviewDataUrl(canvas.toDataURL());
-  }, [
-    layersJson, loadCount, baseImage, textureImage, maskImage, lightingImage, warpPoints,
-    texturePolygon, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
-    allImagesReady, imageLayers.length
-  ]);
-
-  // If warp is not configured, fall back to Konva rendering
-  if (!warpPoints) {
-    const scaleX = textureArea.width / view.printArea.width;
-    const scaleY = textureArea.height / view.printArea.height;
-    const clipFunc = (context: SceneContext) => {
-      if (texturePolygon && texturePolygon.length >= 3) {
-        context.beginPath();
-        context.moveTo(texturePolygon[0].x, texturePolygon[0].y);
-        for (const point of texturePolygon.slice(1)) {
-          context.lineTo(point.x, point.y);
-        }
-        context.closePath();
-        return;
-      }
-      context.rect(textureArea.x, textureArea.y, textureArea.width, textureArea.height);
-    };
-
+function DesignLayerRender({
+  layer,
+  isSelected,
+  onSelect,
+  onChange
+}: {
+  layer: DesignLayer;
+  isSelected: boolean;
+  onSelect: () => void;
+  onChange: (geo: Partial<DesignLayer>) => void;
+}) {
+  if (layer.type === 'text') {
     return (
-      <div className="effect-canvas">
-        <Stage width={500} height={500}>
-          <Layer>
-            <Rect width={500} height={500} fill="#f1f5f9" />
-            {baseImage ? <KonvaImage image={baseImage} width={500} height={500} listening={false} /> : null}
-            <Group clipFunc={clipFunc} listening={false}>
-              {layers.map((layer) => (
-                <MappedPreviewLayer
-                  key={layer.id}
-                  layer={layer}
-                  originX={view.printArea.x}
-                  originY={view.printArea.y}
-                  targetX={textureArea.x}
-                  targetY={textureArea.y}
-                  scaleX={scaleX}
-                  scaleY={scaleY}
-                />
-              ))}
-              {textureImage ? (
-                <KonvaImage
-                  image={textureImage}
-                  width={500}
-                  height={500}
-                  opacity={textureOpacity}
-                  globalCompositeOperation={textureBlendMode}
-                  listening={false}
-                />
-              ) : null}
-              <Rect
-                x={textureArea.x}
-                y={textureArea.y}
-                width={textureArea.width}
-                height={textureArea.height}
-                fillLinearGradientStartPoint={{ x: textureArea.x, y: textureArea.y }}
-                fillLinearGradientEndPoint={{ x: textureArea.x + textureArea.width, y: textureArea.y }}
-                fillLinearGradientColorStops={[0, 'rgba(0,0,0,.3)', 0.22, 'rgba(255,255,255,.2)', 0.52, 'rgba(0,0,0,.16)', 0.75, 'rgba(255,255,255,.2)', 1, 'rgba(0,0,0,.28)']}
-                opacity={textureImage ? 0.04 : 0.18}
-              />
-            </Group>
-          </Layer>
-        </Stage>
-      </div>
+      <KonvaText
+        id={layer.id}
+        text={layer.text}
+        x={layer.x}
+        y={layer.y}
+        width={layer.width}
+        height={layer.height}
+        fontSize={layer.fontSize}
+        fontFamily={layer.fontFamily}
+        fontStyle={`${layer.fontWeight} ${layer.fontStyle || 'normal'}`}
+        fill={layer.fill}
+        align={layer.textAlign || 'center'}
+        verticalAlign="middle"
+        opacity={layer.opacity}
+        rotation={layer.rotation}
+        scaleX={layer.scale}
+        scaleY={layer.scale}
+        stroke={layer.strokeColor}
+        strokeWidth={layer.strokeWidth || 0}
+        shadowColor={layer.shadowColor}
+        shadowBlur={layer.shadowBlur || 0}
+        shadowOffsetX={layer.shadowOffsetX || 0}
+        shadowOffsetY={layer.shadowOffsetY || 0}
+        draggable
+        onClick={onSelect}
+        onTap={onSelect}
+        onDragEnd={(e) => {
+          onChange({ x: e.target.x(), y: e.target.y() });
+        }}
+      />
     );
   }
 
-  // Warp mode: render via composited canvas image
+  // image layer
   return (
-    <div className="effect-canvas">
-      <Stage width={500} height={500}>
-        <Layer>
-          <Rect width={500} height={500} fill="#f1f5f9" />
-          {previewImage ? (
-            <KonvaImage
-              image={previewImage}
-              width={500}
-              height={500}
-              listening={false}
-            />
-          ) : null}
-        </Layer>
-      </Stage>
-    </div>
+    <ImageLayerRender
+      layer={layer}
+      onSelect={onSelect}
+      onChange={onChange}
+    />
   );
 }
 
-function EditableLayer({
+function ImageLayerRender({
   layer,
-  selected,
   onSelect,
-  onMove,
-  onTransform
+  onChange
 }: {
-  layer: DesignLayer;
-  selected: boolean;
+  layer: ImageLayer;
   onSelect: () => void;
-  onMove: (x: number, y: number) => void;
-  onTransform: (geometry: Partial<Pick<DesignLayer, 'x' | 'y' | 'width' | 'height' | 'scale' | 'rotation'>>) => void;
+  onChange: (geo: Partial<DesignLayer>) => void;
 }) {
-  const image = useImageElement(layer.type === 'image' ? layer.assetUrl : undefined);
-  const nodeRef = useRef<any>(null);
-  const transformerRef = useRef<any>(null);
+  const image = useImageElement(layer.assetUrl);
 
-  useEffect(() => {
-    if (!selected || !nodeRef.current || !transformerRef.current) return;
-    transformerRef.current.nodes([nodeRef.current]);
-    transformerRef.current.getLayer()?.batchDraw();
-  }, [image, selected]);
+  if (!image) return null;
 
-  const commitTransform = () => {
-    const node = nodeRef.current;
-    if (!node) return;
-    const scaleX = node.scaleX();
-    const scaleY = node.scaleY();
-    const nextWidth = Math.max(24, node.width() * scaleX);
-    const nextHeight = Math.max(24, node.height() * scaleY);
-    node.scaleX(1);
-    node.scaleY(1);
-    onTransform({
-      x: node.x(),
-      y: node.y(),
-      width: nextWidth,
-      height: nextHeight,
-      scale: 1,
-      rotation: node.rotation()
-    });
-  };
+  if (layer.tileMode && layer.tileMode !== 'none') {
+    return (
+      <TiledImageBlock
+        image={image}
+        layer={layer}
+        common={{
+          id: layer.id,
+          x: layer.x,
+          y: layer.y,
+          width: layer.width,
+          height: layer.height,
+          opacity: layer.opacity,
+          scaleX: layer.scale,
+          scaleY: layer.scale,
+          rotation: layer.rotation,
+          draggable: true,
+          onClick: onSelect,
+          onTap: onSelect,
+          onDragEnd: (e: any) => onChange({ x: e.target.x(), y: e.target.y() })
+        }}
+      />
+    );
+  }
 
-  const common = {
-    ref: nodeRef,
-    x: layer.x,
-    y: layer.y,
-    width: layer.width,
-    height: layer.height,
-    rotation: layer.rotation,
-    scaleX: layer.scale,
-    scaleY: layer.scale,
-    opacity: layer.opacity,
-    draggable: true,
-    onClick: onSelect,
-    onTap: onSelect,
-    onDragEnd: (event: any) => onMove(event.target.x(), event.target.y()),
-    onTransformEnd: commitTransform
-  };
   return (
-    <>
-      {layer.type === 'image' && image && layer.tileMode && layer.tileMode !== 'none' ? (
-        <TiledImageBlock image={image} layer={layer} common={common} />
-      ) : null}
-      {layer.type === 'image' && image && (!layer.tileMode || layer.tileMode === 'none') ? <KonvaImage image={image} {...common} /> : null}
-      {layer.type === 'text' ? <KonvaText {...common} text={layer.text} fontSize={layer.fontSize} fontFamily={layer.fontFamily} fontStyle={layer.fontWeight === '700' ? 'bold' : 'normal'} fill={layer.fill} align="center" verticalAlign="middle" /> : null}
-      {selected ? (
-        <Transformer
-          ref={transformerRef}
-          rotateEnabled
-          keepRatio={false}
-          enabledAnchors={['top-left', 'top-center', 'top-right', 'middle-right', 'bottom-right', 'bottom-center', 'bottom-left', 'middle-left']}
-          anchorSize={15}
-          anchorCornerRadius={5}
-          anchorStrokeWidth={2}
-          borderStrokeWidth={2}
-          borderStroke="#0b5cff"
-          anchorFill="#ffffff"
-          anchorStroke="#0b5cff"
-          shouldOverdrawWholeArea
-          boundBoxFunc={(oldBox, newBox) => {
-            if (newBox.width < 24 || newBox.height < 24) return oldBox;
-            return newBox;
-          }}
-        />
-      ) : null}
-    </>
+    <KonvaImage
+      id={layer.id}
+      image={image}
+      x={layer.x}
+      y={layer.y}
+      width={layer.width}
+      height={layer.height}
+      opacity={layer.opacity}
+      scaleX={layer.scale}
+      scaleY={layer.scale}
+      rotation={layer.rotation}
+      draggable
+      onClick={onSelect}
+      onTap={onSelect}
+      onDragEnd={(e) => onChange({ x: e.target.x(), y: e.target.y() })}
+    />
   );
 }
 
@@ -836,25 +769,25 @@ function TiledImageBlock({
 }: {
   image: HTMLImageElement;
   layer: ImageLayer;
-  common: Record<string, unknown>;
+  common: any;
 }) {
-  const tileWidth = Math.max(64, layer.width / 2);
-  const tileHeight = Math.max(64, layer.height / 2);
-  const cols = Math.ceil(layer.width / tileWidth) + 1;
-  const rows = Math.ceil(layer.height / tileHeight) + 1;
-  const tiles = [];
+  const tileW = layer.naturalWidth;
+  const tileH = layer.naturalHeight;
+  const cols = Math.ceil(layer.width / tileW);
+  const rows = Math.ceil(layer.height / tileH);
 
-  for (let row = 0; row < rows; row += 1) {
-    for (let col = 0; col < cols; col += 1) {
+  const tiles = [];
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
       const mirrored = layer.tileMode === 'mirror' && (row + col) % 2 === 1;
       tiles.push(
         <KonvaImage
           key={`${row}-${col}`}
           image={image}
-          x={mirrored ? (col + 1) * tileWidth : col * tileWidth}
-          y={row * tileHeight}
-          width={tileWidth}
-          height={tileHeight}
+          x={mirrored ? (col + 1) * tileW : col * tileW}
+          y={row * tileH}
+          width={tileW}
+          height={tileH}
           scaleX={mirrored ? -1 : 1}
         />
       );
@@ -868,91 +801,96 @@ function TiledImageBlock({
   );
 }
 
-function MappedPreviewLayer({
-  layer,
-  originX,
-  originY,
-  targetX,
-  targetY,
-  scaleX,
-  scaleY
+/* ---- Preview with perspective warp ---- */
+function PreviewCanvas({
+  project,
+  product,
+  canvasBg
 }: {
-  layer: DesignLayer;
-  originX: number;
-  originY: number;
-  targetX: number;
-  targetY: number;
-  scaleX: number;
-  scaleY: number;
+  project: DesignProject;
+  product: Product;
+  canvasBg: string;
 }) {
-  const image = useImageElement(layer.type === 'image' ? layer.assetUrl : undefined);
-  const x = targetX + (layer.x - originX) * scaleX;
-  const y = targetY + (layer.y - originY) * scaleY;
-  const width = layer.width * scaleX;
-  const height = layer.height * scaleY;
-  if (layer.type === 'image' && image && layer.tileMode && layer.tileMode !== 'none') {
-    return (
-      <TiledImageBlock
-        image={image}
-        layer={{ ...layer, x, y, width, height }}
-        common={{
-          x,
-          y,
-          width,
-          height,
-          opacity: layer.opacity,
-          scaleX: layer.scale,
-          scaleY: layer.scale,
-          rotation: layer.rotation,
-          listening: false
-        }}
-      />
-    );
-  }
-  if (layer.type === 'image' && image) {
-    return <KonvaImage image={image} x={x} y={y} width={width} height={height} opacity={layer.opacity} scaleX={layer.scale} scaleY={layer.scale} rotation={layer.rotation} />;
-  }
-  if (layer.type === 'text') {
-    return <KonvaText x={x} y={y} width={width} height={height} text={layer.text} fontSize={Math.max(8, layer.fontSize * scaleY)} fontFamily={layer.fontFamily} fontStyle={layer.fontWeight === '700' ? 'bold' : 'normal'} fill={layer.fill} align="center" verticalAlign="middle" opacity={layer.opacity} scaleX={layer.scale} scaleY={layer.scale} />;
-  }
-  return null;
-}
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const view = product.views[0];
+  const mockup = product.mockup;
+  const layers = project.views.front.layers;
 
-function UploadPlaceholder({ x, y, width, height }: { x: number; y: number; width: number; height: number }) {
-  return (
-    <Group x={x} y={y} listening={false}>
-      <KonvaText y={height / 2 - 36} width={width} height={34} text="☁" fontSize={38} fill="#475569" align="center" />
-      <KonvaText y={height / 2 + 4} width={width} height={28} text="将本地图片拖到此处" fontSize={15} fill="#334155" align="center" />
-      <KonvaText y={height / 2 + 38} width={width} height={22} text="仅支持 30M 以内 JPG、JPEG、PNG 格式的图片" fontSize={12} fill="#94a3b8" align="center" />
-    </Group>
-  );
-}
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
 
-function LayerInspector({ layer, onScaleUp, onScaleDown, onTextChange }: { layer?: DesignLayer; onScaleUp: () => void; onScaleDown: () => void; onTextChange: (updates: Partial<Pick<TextLayer, 'text' | 'fill' | 'fontSize' | 'fontWeight'>>) => void }) {
-  if (!layer) return null;
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // Background
+    ctx.fillStyle = canvasBg;
+    ctx.fillRect(0, 0, w, h);
+
+    // Draw layers onto an offscreen canvas
+    const offscreen = document.createElement('canvas');
+    offscreen.width = view.printArea.width;
+    offscreen.height = view.printArea.height;
+    const offCtx = offscreen.getContext('2d')!;
+
+    // White background for print area
+    offCtx.fillStyle = '#ffffff';
+    offCtx.fillRect(0, 0, offscreen.width, offscreen.height);
+
+    // Render each layer
+    const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
+    for (const layer of sorted) {
+      offCtx.save();
+      offCtx.globalAlpha = layer.opacity;
+      if (layer.type === 'text') {
+        offCtx.font = `${layer.fontWeight} ${layer.fontSize}px ${layer.fontFamily}`;
+        offCtx.fillStyle = layer.fill;
+        offCtx.textAlign = (layer.textAlign || 'center') as CanvasTextAlign;
+        offCtx.textBaseline = 'middle';
+        if (layer.strokeColor && layer.strokeWidth) {
+          offCtx.strokeStyle = layer.strokeColor;
+          offCtx.lineWidth = layer.strokeWidth;
+          offCtx.strokeText(layer.text, layer.x - view.printArea.x + layer.width / 2, layer.y - view.printArea.y + layer.height / 2);
+        }
+        offCtx.fillText(layer.text, layer.x - view.printArea.x + layer.width / 2, layer.y - view.printArea.y + layer.height / 2);
+      }
+      offCtx.restore();
+    }
+
+    // If warpPoints defined, use perspective transform
+    if (mockup.warpPoints) {
+      const { src, dst } = mockup.warpPoints;
+      const srcFlat = src.flatMap(p => [p.x * view.printArea.width, p.y * view.printArea.height]);
+      const dstFlat = dst.flatMap(p => [p.x, p.y]);
+      const transform = new PerspectiveTransform(new Float64Array(srcFlat), new Float64Array(dstFlat));
+      const mesh = WarpMesh.create(
+        view.printArea.width, view.printArea.height,
+        view.printArea.width, view.printArea.height,
+        transform, 16, 16
+      );
+      mesh.render(ctx, offscreen, view.printArea.width, view.printArea.height);
+    } else {
+      ctx.drawImage(offscreen, view.printArea.x, view.printArea.y);
+    }
+  }, [project, product, canvasBg]);
+
   return (
-    <div className="floating-inspector">
-      <strong>{layer.type === 'text' ? '文字图层' : '图片图层'}</strong>
-      <button onClick={onScaleDown}>缩小</button>
-      <span>{Math.round(layer.scale * 100)}%</span>
-      <button onClick={onScaleUp}>放大</button>
-      {layer.type === 'text' ? (
-        <>
-          <input value={layer.text} onChange={(event) => onTextChange({ text: event.target.value })} />
-          <input type="color" value={layer.fill} onChange={(event) => onTextChange({ fill: event.target.value })} />
-        </>
-      ) : null}
-    </div>
+    <canvas
+      ref={canvasRef}
+      width={view.canvas.width}
+      height={view.canvas.height}
+      style={{ maxWidth: '100%', height: 'auto', border: '1px solid #e2e8f0', borderRadius: 8 }}
+    />
   );
 }
 
 function useImageElement(src?: string) {
   const [image, setImage] = useState<HTMLImageElement | undefined>();
   useEffect(() => {
-    if (!src) {
-      setImage(undefined);
-      return;
-    }
+    if (!src) { setImage(undefined); return; }
     const next = new window.Image();
     next.crossOrigin = 'anonymous';
     next.onload = () => setImage(next);

@@ -39,7 +39,16 @@ export function createTextLayer(project: DesignProject, text: string): DesignPro
     fontSize: product.id === 'door-curtain' ? 24 : 40,
     fontFamily: 'Inter, Arial, sans-serif',
     fill: '#0f172a',
-    fontWeight: '700'
+    fontWeight: '700',
+    fontStyle: 'normal',
+    textAlign: 'center',
+    lineHeight: 1.2,
+    strokeColor: '',
+    strokeWidth: 0,
+    shadowColor: '',
+    shadowBlur: 0,
+    shadowOffsetX: 0,
+    shadowOffsetY: 0
   };
 
   return appendLayer(project, layer);
@@ -106,7 +115,7 @@ export function resizeLayer(project: DesignProject, layerId: string, scale: numb
 export function updateTextLayer(
   project: DesignProject,
   layerId: string,
-  updates: Partial<Pick<TextLayer, 'text' | 'fill' | 'fontSize' | 'fontWeight'>>
+  updates: Partial<Pick<TextLayer, 'text' | 'fill' | 'fontSize' | 'fontWeight' | 'fontFamily' | 'fontStyle' | 'textAlign' | 'lineHeight' | 'strokeColor' | 'strokeWidth' | 'shadowColor' | 'shadowBlur' | 'shadowOffsetX' | 'shadowOffsetY'>>
 ): DesignProject {
   return updateLayer(project, layerId, (layer) => {
     if (layer.type !== 'text') return layer;

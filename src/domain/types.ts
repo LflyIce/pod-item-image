@@ -78,6 +78,15 @@ export type TextLayer = BaseLayer & {
   fontFamily: string;
   fill: string;
   fontWeight: '400' | '700';
+  fontStyle?: 'normal' | 'italic';
+  textAlign?: 'left' | 'center' | 'right';
+  lineHeight?: number;
+  strokeColor?: string;
+  strokeWidth?: number;
+  shadowColor?: string;
+  shadowBlur?: number;
+  shadowOffsetX?: number;
+  shadowOffsetY?: number;
 };
 
 export type ImageLayer = BaseLayer & {
