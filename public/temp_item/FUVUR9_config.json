@@ -1,235 +1,525 @@
-[
-  {
-    "color": {
-      "id": 29,
-      "name": "黑色",
-      "en_name": "Black",
-      "hex": "#000000"
-    },
-    "views": [
-      {
-        "position": 1,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1aab84c-1-29-1-500-d9971321be0d77e2bd411b8ea231dd48.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-1-29-150-698d51a19d8a121ce581499d7b70166878af1011bc8cb11e3268e116308b0448-1-5d9222a895313f071d6b56a60cc297f3.png",
-        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac932c-1-29-1-500-9492a6a399b2bf868a82cde14f5daaab.png",
-        "master": 1,
-        "use_view_id": 1,
-        "parts": [
-          {
-            "type": 0,
-            "target_view_id": 1,
-            "distort_params": {
-              "p1": [
-                -12.0,
-                7.0
-              ],
-              "p2": [
-                -12.0,
-                419.0
-              ],
-              "p3": [
-                229.87799999999996,
-                419.0
-              ],
-              "p4": [
-                230.87799999999996,
-                7.0
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "position": 2,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac0ebd-1-29-2-500-6216dabb151452e77942fa3963343583.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-2-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-71e4331109330461f2297ea4b8de7b19.png",
-        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac0ec9-1-29-2-500-578c9ac25c045589ab2762924329c371.png",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 0,
-            "target_view_id": 1,
-            "distort_params": {
-              "p1": [
-                54.0,
-                180.0
-              ],
-              "p2": [
-                61.0,
-                460.0
-              ],
-              "p3": [
-                235.87799999999996,
-                479.0
-              ],
-              "p4": [
-                222.87799999999996,
-                148.0
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "position": 3,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac8f33-1-29-3-500-f6a2425f02801297bfbb72bf3d868095.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-3-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-80d0e3db8edecdf71bd79860e09405f1.png",
-        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac5526-1-29-3-500-8f940f4bfd95d363e89dbebd143beff5.png",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 0,
-            "target_view_id": 1,
-            "distort_params": {
-              "p1": [
-                3.0,
-                -3.0
-              ],
-              "p2": [
-                3.0,
-                581.0
-              ],
-              "p3": [
-                348.87799999999993,
-                580.0
-              ],
-              "p4": [
-                346.87799999999993,
-                0.0
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "position": 6,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac8f52-1-29-6-500-98b3d9e5134fc40d33d6ee1eee2fb0e2.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-6-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-6dfd60db3e917be6ef1d68533bc65a73.png",
-        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac8f61-1-29-6-500-62eb4f53f1181a42d7c256354e2c65a3.png",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 0,
-            "target_view_id": 1,
-            "distort_params": {
-              "p1": [
-                56.0,
-                15.0
-              ],
-              "p2": [
-                56.0,
-                594.0
-              ],
-              "p3": [
-                397.87799999999993,
-                594.0
-              ],
-              "p4": [
-                397.87799999999993,
-                13.0
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "position": 4,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac5141-1-29-4-500-12b8eacb92b732c8e858b94808a56cea.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-4-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-3aa159c55b82954b10cddc1a5ff54bf5.png",
-        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1b10632-1-29-4-500-020fd3b013734851ccfe99727386fb68.png",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 0,
-            "target_view_id": 1,
-            "distort_params": {
-              "p1": [
-                -107.99999999999986,
-                120.0
-              ],
-              "p2": [
-                1474.0000000000002,
-                1744.0
-              ],
-              "p3": [
-                2244.8779999999997,
-                1004.0
-              ],
-              "p4": [
-                925.8779999999998,
-                -498.0
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "position": 5,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac65cb-1-29-5-500-44bccdbcb6ef7c88968cc9ee8645f6e6.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-5-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-e8e040882ba79d97c040a6fde770f66f.png",
-        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac65a0-1-29-5-500-6c00d0ae736c47b1e42631f494b035ca.png",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 0,
-            "target_view_id": 1,
-            "distort_params": {
-              "p1": [
-                0.0,
-                0.0
-              ],
-              "p2": [
-                0.0,
-                600.0
-              ],
-              "p3": [
-                352.87799999999993,
-                600.0
-              ],
-              "p4": [
-                352.87799999999993,
-                0.0
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "position": 7,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-71fa32b-1-29-7-500-cf9e041d60df804037fdc2b27046e0f9.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-7-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-e7e6c1977093f833a1abce9548d930e6.png",
-        "texture": "",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                -1.0,
-                3.0
-              ],
-              "p2": [
-                -1.0,
-                593.0
-              ],
-              "p3": [
-                589.0,
-                593.0
-              ],
-              "p4": [
-                589.0,
-                3.0
-              ]
+{
+  "id": 10958,
+  "name": "门帘34x56in（两片拼接）",
+  "width": 1200,
+  "height": 1200,
+  "scenes": [
+    {
+      "id": "01",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1aab84c-1-29-1-500-d9971321be0d77e2bd411b8ea231dd48.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-1-29-150-698d51a19d8a121ce581499d7b70166878af1011bc8cb11e3268e116308b0448-1-5d9222a895313f071d6b56a60cc297f3.png",
+      "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac932c-1-29-1-500-9492a6a399b2bf868a82cde14f5daaab.png",
+      "faces": [
+        {
+          "mask": "01_mask.png",
+          "x": -12.0,
+          "y": 7.0,
+          "width": 242.87799999999996,
+          "height": 412.0,
+          "ctrlPos": [
+            {
+              "x": -121.18899999999998,
+              "y": -206.0,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": 0.25,
+              "y": -206.0,
+              "z": 0
+            },
+            {
+              "x": 121.68899999999998,
+              "y": -206.0,
+              "z": 0
+            },
+            {
+              "x": -121.18899999999998,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 121.18899999999998,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": -121.18899999999998,
+              "y": 206.0,
+              "z": 0
+            },
+            {
+              "x": -0.25,
+              "y": 206.0,
+              "z": 0
+            },
+            {
+              "x": 120.68899999999998,
+              "y": 206.0,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 0,
+            "targetViewId": 1,
+            "distortParams": {
+              "p1": "-12,7",
+              "p2": "-12,419",
+              "p3": "229.87799999999996,419",
+              "p4": "230.87799999999996,7"
+            },
+            "detail3d": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac0ebd-1-29-2-500-6216dabb151452e77942fa3963343583.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-2-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-71e4331109330461f2297ea4b8de7b19.png",
+      "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac0ec9-1-29-2-500-578c9ac25c045589ab2762924329c371.png",
+      "faces": [
+        {
+          "mask": "02_mask.png",
+          "x": 54.0,
+          "y": 148.0,
+          "width": 181.87799999999996,
+          "height": 331.0,
+          "ctrlPos": [
+            {
+              "x": -89.43899999999996,
+              "y": -136.75,
+              "z": 0
+            },
+            {
+              "x": -5.0,
+              "y": -152.75,
+              "z": 0
+            },
+            {
+              "x": 79.439,
+              "y": -168.75,
+              "z": 0
+            },
+            {
+              "x": -85.93899999999996,
+              "y": 3.25,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 85.939,
+              "y": -3.25,
+              "z": 0
+            },
+            {
+              "x": -82.43899999999996,
+              "y": 143.25,
+              "z": 0
+            },
+            {
+              "x": 5.0,
+              "y": 152.75,
+              "z": 0
+            },
+            {
+              "x": 92.439,
+              "y": 162.25,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 0,
+            "targetViewId": 1,
+            "distortParams": {
+              "p1": "54,180",
+              "p2": "61,460",
+              "p3": "235.87799999999996,479",
+              "p4": "222.87799999999996,148"
+            },
+            "detail3d": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac8f33-1-29-3-500-f6a2425f02801297bfbb72bf3d868095.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-3-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-80d0e3db8edecdf71bd79860e09405f1.png",
+      "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac5526-1-29-3-500-8f940f4bfd95d363e89dbebd143beff5.png",
+      "faces": [
+        {
+          "mask": "03_mask.png",
+          "x": 3.0,
+          "y": -3.0,
+          "width": 345.87799999999993,
+          "height": 584.0,
+          "ctrlPos": [
+            {
+              "x": -172.43899999999996,
+              "y": -292.5,
+              "z": 0
+            },
+            {
+              "x": -0.5,
+              "y": -291.0,
+              "z": 0
+            },
+            {
+              "x": 171.43899999999996,
+              "y": -289.5,
+              "z": 0
+            },
+            {
+              "x": -172.43899999999996,
+              "y": -0.5,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 172.43899999999996,
+              "y": 0.5,
+              "z": 0
+            },
+            {
+              "x": -172.43899999999996,
+              "y": 291.5,
+              "z": 0
+            },
+            {
+              "x": 0.5,
+              "y": 291.0,
+              "z": 0
+            },
+            {
+              "x": 173.43899999999996,
+              "y": 290.5,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 0,
+            "targetViewId": 1,
+            "distortParams": {
+              "p1": "3,-3",
+              "p2": "3,581",
+              "p3": "348.87799999999993,580",
+              "p4": "346.87799999999993,0"
+            },
+            "detail3d": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac8f52-1-29-6-500-98b3d9e5134fc40d33d6ee1eee2fb0e2.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-6-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-6dfd60db3e917be6ef1d68533bc65a73.png",
+      "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac8f61-1-29-6-500-62eb4f53f1181a42d7c256354e2c65a3.png",
+      "faces": [
+        {
+          "mask": "06_mask.png",
+          "x": 56.0,
+          "y": 13.0,
+          "width": 341.87799999999993,
+          "height": 581.0,
+          "ctrlPos": [
+            {
+              "x": -170.93899999999996,
+              "y": -289.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": -290.0,
+              "z": 0
+            },
+            {
+              "x": 170.93899999999996,
+              "y": -291.0,
+              "z": 0
+            },
+            {
+              "x": -170.93899999999996,
+              "y": 0.5,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 170.93899999999996,
+              "y": -0.5,
+              "z": 0
+            },
+            {
+              "x": -170.93899999999996,
+              "y": 290.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 290.0,
+              "z": 0
+            },
+            {
+              "x": 170.93899999999996,
+              "y": 290.0,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 0,
+            "targetViewId": 1,
+            "distortParams": {
+              "p1": "56,15",
+              "p2": "56,594",
+              "p3": "397.87799999999993,594",
+              "p4": "397.87799999999993,13"
+            },
+            "detail3d": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac5141-1-29-4-500-12b8eacb92b732c8e858b94808a56cea.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-4-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-3aa159c55b82954b10cddc1a5ff54bf5.png",
+      "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1b10632-1-29-4-500-020fd3b013734851ccfe99727386fb68.png",
+      "faces": [
+        {
+          "mask": "04_mask.png",
+          "x": -107.99999999999986,
+          "y": -498.0,
+          "width": 2352.8779999999997,
+          "height": 2242.0,
+          "ctrlPos": [
+            {
+              "x": -1242.1889999999999,
+              "y": -472.5,
+              "z": 0
+            },
+            {
+              "x": -725.2500000000001,
+              "y": -781.5,
+              "z": 0
+            },
+            {
+              "x": -208.31100000000026,
+              "y": -1090.5,
+              "z": 0
+            },
+            {
+              "x": -451.18899999999985,
+              "y": 339.5,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 451.1889999999996,
+              "y": -339.5,
+              "z": 0
+            },
+            {
+              "x": 339.81100000000015,
+              "y": 1151.5,
+              "z": 0
+            },
+            {
+              "x": 725.2499999999998,
+              "y": 781.5,
+              "z": 0
+            },
+            {
+              "x": 1110.6889999999996,
+              "y": 411.5,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 0,
+            "targetViewId": 1,
+            "distortParams": {
+              "p1": "-107.99999999999986,120",
+              "p2": "1474.0000000000002,1744",
+              "p3": "2244.8779999999997,1004",
+              "p4": "925.8779999999998,-498"
+            },
+            "detail3d": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac65cb-1-29-5-500-44bccdbcb6ef7c88968cc9ee8645f6e6.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-5-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-e8e040882ba79d97c040a6fde770f66f.png",
+      "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac65a0-1-29-5-500-6c00d0ae736c47b1e42631f494b035ca.png",
+      "faces": [
+        {
+          "mask": "05_mask.png",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 352.87799999999993,
+          "height": 600.0,
+          "ctrlPos": [
+            {
+              "x": -176.43899999999996,
+              "y": -300.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": -300.0,
+              "z": 0
+            },
+            {
+              "x": 176.43899999999996,
+              "y": -300.0,
+              "z": 0
+            },
+            {
+              "x": -176.43899999999996,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 176.43899999999996,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": -176.43899999999996,
+              "y": 300.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 300.0,
+              "z": 0
+            },
+            {
+              "x": 176.43899999999996,
+              "y": 300.0,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 0,
+            "targetViewId": 1,
+            "distortParams": {
+              "p1": "0,0",
+              "p2": "0,600",
+              "p3": "352.87799999999993,600",
+              "p4": "352.87799999999993,0"
+            },
+            "detail3d": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-71fa32b-1-29-7-500-cf9e041d60df804037fdc2b27046e0f9.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-7-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-e7e6c1977093f833a1abce9548d930e6.png",
+      "texture": "",
+      "faces": [
+        {
+          "mask": "07_mask.png",
+          "x": -1.0,
+          "y": 3.0,
+          "width": 590.0,
+          "height": 590.0,
+          "ctrlPos": [
+            {
+              "x": -295.0,
+              "y": -295.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": -295.0,
+              "z": 0
+            },
+            {
+              "x": 295.0,
+              "y": -295.0,
+              "z": 0
+            },
+            {
+              "x": -295.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 295.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": -295.0,
+              "y": 295.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 295.0,
+              "z": 0
+            },
+            {
+              "x": 295.0,
+              "y": 295.0,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "-1,3",
+              "p2": "-1,593",
+              "p3": "589,593",
+              "p4": "589,3"
+            },
+            "detail3d": {
               "model_id": 3882,
+              "angle": 0,
               "left": -1,
               "top": 3,
               "width": 590,
@@ -385,8 +675,8 @@
               "enable_hdr": -1
             }
           }
-        ]
-      }
-    ]
-  }
-]
+        }
+      ]
+    }
+  ]
+}

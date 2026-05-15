@@ -23,7 +23,7 @@ import { getProductById, getVariant } from '../domain/catalog';
 import { createBezierSurfaceMesh } from '../domain/bezierSurface';
 import { normalOffset } from '../domain/normalDisplacement';
 import { PerspectiveTransform } from '../domain/perspectiveTransform';
-import { DEMO_POD_TEMPLATES, getDemoPodTemplate, getPodTemplatePrintRect, podTemplateAssetPath, podTemplateScenePath, type PodFace } from '../domain/podTemplate';
+import { DEMO_POD_TEMPLATES, getDemoPodTemplate, getPodTemplatePrintRect, podTemplateAssetPath, podTemplateScenePath, type PodFace, type PodTemplate, loadTempItemTemplates } from '../domain/podTemplate';
 import { applyHighlightOverlay, getPreviewRenderMode, getPreviewSurfacePath, shadeDesignPixel, shouldRenderSurfaceEffects } from '../domain/previewCompositing';
 import {
   applyTemplate,
@@ -152,6 +152,7 @@ export function App() {
   const [activeMockupTemplateId, setActiveMockupTemplateId] = useState<string | null>(null);
   const [activePodTemplateId, setActivePodTemplateId] = useState<string | null>('0001');
   const [activePodSceneId, setActivePodSceneId] = useState<string>('01');
+  const [tempItemTemplates, setTempItemTemplates] = useState<PodTemplate[]>([]);
   const [assetPanelWidth, setAssetPanelWidth] = useState(294);
   const [effectPanelWidth, setEffectPanelWidth] = useState(390);
   const [project, setProject] = useState<DesignProject>(() => createBlankProject('door-curtain', 'curtain-white'));
@@ -185,7 +186,12 @@ export function App() {
   const selectedLayer = layers.find((layer) => layer.id === selectedLayerId);
   const quality = getQualityStatus(project);
   const previewUrl = useMemo(() => JSON.stringify(project), [project]);
-  const activePodTemplate = activePodTemplateId ? getDemoPodTemplate(activePodTemplateId) : undefined;
+  const activePodTemplate = activePodTemplateId ? ([...DEMO_POD_TEMPLATES, ...tempItemTemplates].find((t) => t.id === activePodTemplateId)) : undefined;
+  const allPodTemplates = useMemo(() => [...DEMO_POD_TEMPLATES, ...tempItemTemplates], [tempItemTemplates]);
+
+  useEffect(() => {
+    loadTempItemTemplates().then(setTempItemTemplates);
+  }, []);
 
   const addImageAsset = (asset: AssetItem) => {
     const next = createImageLayer(project, asset.src, { width: asset.width, height: asset.height });
@@ -510,7 +516,7 @@ export function App() {
             >
               默认
             </button>
-            {DEMO_POD_TEMPLATES.map((template) => (
+            {[...DEMO_POD_TEMPLATES, ...tempItemTemplates].map((template) => (
               <button
                 key={template.id}
                 className={activePodTemplateId === template.id ? 'active' : ''}
@@ -519,7 +525,7 @@ export function App() {
                   setActivePodSceneId(template.scenes[0]?.id ?? '01');
                 }}
               >
-                {template.id}
+                {template.name || template.id}
               </button>
             ))}
           </div>
@@ -537,7 +543,7 @@ export function App() {
             </div>
           ) : null}
           <button className="effect-preview-button" onClick={() => setPreviewOpen(true)} aria-label="预览效果图">
-            <ProductPreview product={product} layers={layers} size={Math.max(260, effectPanelWidth - 32)} />
+            <ProductPreview product={product} layers={layers} size={Math.max(260, effectPanelWidth - 32)} podTemplates={allPodTemplates} />
           </button>
           <div className="effect-thumbs">
             <button className="active" onClick={() => setPreviewOpen(true)}><img src="/assets/door-curtain-base.png" alt="" /><span>效果图1</span></button>
@@ -561,7 +567,7 @@ export function App() {
         <div className="preview-modal-backdrop" onMouseDown={() => setPreviewOpen(false)}>
           <section className="preview-modal" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-modal="true" aria-label="效果图预览">
             <button className="preview-modal-close" onClick={() => setPreviewOpen(false)} aria-label="关闭预览">×</button>
-            <ProductPreview product={product} layers={layers} />
+            <ProductPreview product={product} layers={layers} podTemplates={allPodTemplates} />
           </section>
         </div>
       ) : null}
@@ -793,7 +799,7 @@ function KonvaEditor({
   );
 }
 
-function ProductPreview({ product, layers, size = 500 }: { product: Product; layers: DesignLayer[]; size?: number }) {
+function ProductPreview({ product, layers, size = 500, podTemplates = DEMO_POD_TEMPLATES }: { product: Product; layers: DesignLayer[]; size?: number; podTemplates?: PodTemplate[] }) {
   const view = product.views[0];
   const previewSize = Math.round(size);
   const previewScale = previewSize / 500;
@@ -821,14 +827,17 @@ function ProductPreview({ product, layers, size = 500 }: { product: Product; lay
   const normalStrength = product.mockup.normalStrength ?? 0.16;
   const renderMode = getPreviewRenderMode(product);
   const renderSurfaceEffects = shouldRenderSurfaceEffects(layers);
-  const podTemplate = product.mockup.podTemplate ? getDemoPodTemplate(product.mockup.podTemplate.templateId) : undefined;
+  const podTemplate = product.mockup.podTemplate ? (podTemplates.find((t) => t.id === product.mockup.podTemplate!.templateId)) : undefined;
   const podScene = podTemplate?.scenes.find((scene) => scene.id === product.mockup.podTemplate?.sceneId) ?? podTemplate?.scenes[0];
-  const podBaseImage = useImageElement(podTemplate && podScene ? podTemplateScenePath(podTemplate.id, `${podScene.id}.jpg`) : undefined);
-  const podEffectImage = useImageElement(
-    podTemplate && podScene?.effect ? podTemplateScenePath(podTemplate.id, `${podScene.id}.png`) : undefined
-  );
+  const podBaseSrc = podScene?.image || (podTemplate && podScene ? podTemplateScenePath(podTemplate.id, `${podScene.id}.jpg`) : undefined);
+  const podBaseImage = useImageElement(podBaseSrc);
+  const podEffectSrc = podScene?.effectImage || (podTemplate && podScene?.effect ? podTemplateScenePath(podTemplate.id, `${podScene.id}.png`) : undefined);
+  const podEffectImage = useImageElement(podEffectSrc);
   const podMaskSrcs = useMemo(
-    () => (podTemplate && podScene ? podScene.faces.map((face) => podTemplateScenePath(podTemplate.id, face.mask)) : []),
+    () => (podTemplate && podScene ? podScene.faces.map((face) => {
+      if (face.mask.startsWith('http')) return face.mask;
+      return podTemplateScenePath(podTemplate.id, face.mask);
+    }) : []),
     [podScene, podTemplate]
   );
   const { images: podMaskImages, loadCount: podMaskLoadCount } = useImageElements(podMaskSrcs);
@@ -881,11 +890,7 @@ function ProductPreview({ product, layers, size = 500 }: { product: Product; lay
       podTemplate &&
         podScene &&
         podBaseImage &&
-        (!podScene.effect || podEffectImage) &&
-        podMaskSrcs.every((src) => {
-          const image = podMaskImages.get(src);
-          return image && image.complete && image.naturalWidth > 0;
-        })
+        (!podScene.effect || podEffectImage)
     );
 
   // ===== Rendering Pipeline: layered design surface + mask + lighting fusion =====
@@ -926,7 +931,7 @@ function ProductPreview({ product, layers, size = 500 }: { product: Product; lay
         const warpedContext = warpedCanvas.getContext('2d')!;
         renderBezierSurface(warpedContext, faceCanvas, face.ctrlPos, PVW, PVH);
         const mask = podMaskImages.get(podTemplateScenePath(podTemplate.id, face.mask));
-        if (mask) {
+        if (mask && mask.complete && mask.naturalWidth > 0) {
           applyAlphaMask(warpedContext, mask, PVW, PVH);
         }
         ctx.save();
@@ -935,7 +940,7 @@ function ProductPreview({ product, layers, size = 500 }: { product: Product; lay
         ctx.restore();
       }
 
-      if (podEffectImage) {
+      if (podEffectImage && podEffectImage.complete && podEffectImage.naturalWidth > 0) {
         ctx.drawImage(podEffectImage, 0, 0, PVW, PVH);
       }
 

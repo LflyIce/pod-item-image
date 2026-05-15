@@ -8,7 +8,10 @@
       "Bash(node -e \"const fs=require\\('fs'\\); const png=fs.readFileSync\\('public/assets/curtain-mask.png'\\); const w=png.readUInt32BE\\(16\\),h=png.readUInt32BE\\(20\\); console.log\\('curtain-mask.png size:', w, 'x', h\\); const shadow=fs.readFileSync\\('public/assets/curtain-shadow.png'\\); const sw=shadow.readUInt32BE\\(16\\),sh=shadow.readUInt32BE\\(20\\); console.log\\('curtain-shadow.png size:', sw, 'x', sh\\); const folds=fs.readFileSync\\('public/assets/door-curtain-folds.png'\\); const fw=folds.readUInt32BE\\(16\\),fh=folds.readUInt32BE\\(20\\); console.log\\('door-curtain-folds.png size:', fw, 'x', fh\\);\")",
       "Bash(node -e ' *)",
       "Bash(npm test *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(./node_modules/.bin/vitest run *)",
+      "Bash(./node_modules/.bin/vite --host 127.0.0.1)"
     ]
   }
 }

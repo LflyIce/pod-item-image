@@ -16,6 +16,9 @@ export type PodFace = {
 export type PodScene = {
   id: string;
   effect?: boolean;
+  image?: string;
+  effectImage?: string;
+  texture?: string;
   faces: PodFace[];
 };
 
@@ -273,5 +276,40 @@ export function getPodTemplatePrintRect(template: PodTemplate) {
 
 function roundTemplateValue(value: number) {
   return Math.round(value * 1_000_000) / 1_000_000;
+}
+
+const TEMP_ITEM_CONFIGS = [
+  '/temp_item/BW9J68_config.json',
+  '/temp_item/YYLJDB_config.json',
+  '/temp_item/82UF9E_config.json',
+  '/temp_item/FUVUR9_config.json',
+];
+
+export async function loadTempItemTemplates(): Promise<PodTemplate[]> {
+  const results = await Promise.all(
+    TEMP_ITEM_CONFIGS.map(async (configPath) => {
+      try {
+        const response = await fetch(configPath);
+        const data = await response.json();
+        return {
+          id: String(data.id),
+          name: data.name,
+          width: data.width || 0,
+          height: data.height || 0,
+          scenes: (data.scenes as PodScene[]).map((scene) => ({
+            id: scene.id,
+            effect: scene.effect,
+            image: scene.image,
+            effectImage: scene.effectImage,
+            texture: scene.texture || undefined,
+            faces: scene.faces,
+          })),
+        } as PodTemplate;
+      } catch {
+        return null;
+      }
+    })
+  );
+  return results.filter((t): t is PodTemplate => t !== null);
 }
 

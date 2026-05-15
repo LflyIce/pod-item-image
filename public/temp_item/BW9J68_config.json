@@ -1,43 +1,81 @@
-[
-  {
-    "color": {
-      "id": 29,
-      "name": "黑色",
-      "en_name": "Black",
-      "hex": "#000000"
-    },
-    "views": [
-      {
-        "position": 1,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce85c6e-1-29-1-500-87d599d00359641506ae9f96afcd016d.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-1-29-150-698d51a19d8a121ce581499d7b7016682c7840b096ce964ebe3afa254471f137-1-c02e526c4bc36753d57aaf41491a0c08.png",
-        "texture": "",
-        "master": 1,
-        "use_view_id": 1,
-        "parts": [
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                88.33333333333333,
-                -163.33333333333334
-              ],
-              "p2": [
-                88.33333333333333,
-                671.6666666666666
-              ],
-              "p3": [
-                923.3333333333334,
-                671.6666666666666
-              ],
-              "p4": [
-                923.3333333333334,
-                -163.33333333333334
-              ]
+{
+  "id": 12449,
+  "name": "帷幔穿杆短窗帘54x18in",
+  "width": 2000,
+  "height": 2000,
+  "scenes": [
+    {
+      "id": "01",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce85c6e-1-29-1-500-87d599d00359641506ae9f96afcd016d.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-1-29-150-698d51a19d8a121ce581499d7b7016682c7840b096ce964ebe3afa254471f137-1-c02e526c4bc36753d57aaf41491a0c08.png",
+      "texture": "",
+      "faces": [
+        {
+          "mask": "01_mask.png",
+          "x": 88.33333333333333,
+          "y": -163.33333333333334,
+          "width": 835.0,
+          "height": 835.0,
+          "ctrlPos": [
+            {
+              "x": -417.50000000000006,
+              "y": -417.5,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": 0.0,
+              "y": -417.5,
+              "z": 0
+            },
+            {
+              "x": 417.5,
+              "y": -417.5,
+              "z": 0
+            },
+            {
+              "x": -417.50000000000006,
+              "y": -2.842170943040401e-14,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 417.5,
+              "y": -2.842170943040401e-14,
+              "z": 0
+            },
+            {
+              "x": -417.50000000000006,
+              "y": 417.5,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 417.5,
+              "z": 0
+            },
+            {
+              "x": 417.5,
+              "y": 417.5,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "88.33333333333333,-163.33333333333334",
+              "p2": "88.33333333333333,671.6666666666666",
+              "p3": "923.3333333333334,671.6666666666666",
+              "p4": "923.3333333333334,-163.33333333333334"
+            },
+            "detail3d": {
               "model_id": 8835,
+              "angle": 0,
               "left": 53,
               "top": -98,
               "width": 501,
@@ -184,39 +222,81 @@
               "enable_hdr": -1
             }
           }
-        ]
-      },
-      {
-        "position": 2,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce852d9-1-29-2-500-ab9538b918a4edad8165bb58e3061da9.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-2-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-5c3d184aeddb174abf7a597b96bdf776.png",
-        "texture": "",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                21.666666666666668,
-                -6.666666666666667
-              ],
-              "p2": [
-                21.666666666666668,
-                766.6666666666666
-              ],
-              "p3": [
-                795.0,
-                766.6666666666666
-              ],
-              "p4": [
-                795.0,
-                -6.666666666666667
-              ]
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce852d9-1-29-2-500-ab9538b918a4edad8165bb58e3061da9.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-2-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-5c3d184aeddb174abf7a597b96bdf776.png",
+      "texture": "",
+      "faces": [
+        {
+          "mask": "02_mask.png",
+          "x": 21.666666666666668,
+          "y": -6.666666666666667,
+          "width": 773.3333333333334,
+          "height": 773.3333333333333,
+          "ctrlPos": [
+            {
+              "x": -386.6666666666667,
+              "y": -386.66666666666663,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": -5.684341886080802e-14,
+              "y": -386.66666666666663,
+              "z": 0
+            },
+            {
+              "x": 386.66666666666663,
+              "y": -386.66666666666663,
+              "z": 0
+            },
+            {
+              "x": -386.6666666666667,
+              "y": 5.684341886080802e-14,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 386.66666666666663,
+              "y": 5.684341886080802e-14,
+              "z": 0
+            },
+            {
+              "x": -386.6666666666667,
+              "y": 386.6666666666667,
+              "z": 0
+            },
+            {
+              "x": -5.684341886080802e-14,
+              "y": 386.6666666666667,
+              "z": 0
+            },
+            {
+              "x": 386.66666666666663,
+              "y": 386.6666666666667,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "21.666666666666668,-6.666666666666667",
+              "p2": "21.666666666666668,766.6666666666666",
+              "p3": "795,766.6666666666666",
+              "p4": "795,-6.666666666666667"
+            },
+            "detail3d": {
               "model_id": 8836,
+              "angle": 0,
               "left": 13,
               "top": -4,
               "width": 464,
@@ -363,30 +443,73 @@
               ],
               "enable_hdr": -1
             }
-          },
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                205.0,
-                383.3333333333333
-              ],
-              "p2": [
-                205.0,
-                1156.6666666666667
-              ],
-              "p3": [
-                978.3333333333334,
-                1156.6666666666667
-              ],
-              "p4": [
-                978.3333333333334,
-                383.3333333333333
-              ]
+          }
+        },
+        {
+          "mask": "02_mask.png",
+          "x": 205.0,
+          "y": 383.3333333333333,
+          "width": 773.3333333333334,
+          "height": 773.3333333333335,
+          "ctrlPos": [
+            {
+              "x": -386.66666666666674,
+              "y": -386.6666666666668,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": 0.0,
+              "y": -386.6666666666668,
+              "z": 0
+            },
+            {
+              "x": 386.66666666666663,
+              "y": -386.6666666666668,
+              "z": 0
+            },
+            {
+              "x": -386.66666666666674,
+              "y": -1.1368683772161603e-13,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 386.66666666666663,
+              "y": -1.1368683772161603e-13,
+              "z": 0
+            },
+            {
+              "x": -386.66666666666674,
+              "y": 386.66666666666663,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 386.66666666666663,
+              "z": 0
+            },
+            {
+              "x": 386.66666666666663,
+              "y": 386.66666666666663,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "205,383.3333333333333",
+              "p2": "205,1156.6666666666667",
+              "p3": "978.3333333333334,1156.6666666666667",
+              "p4": "978.3333333333334,383.3333333333333"
+            },
+            "detail3d": {
               "model_id": 8836,
+              "angle": 0,
               "left": 123,
               "top": 230,
               "width": 464,
@@ -534,39 +657,81 @@
               "enable_hdr": -1
             }
           }
-        ]
-      },
-      {
-        "position": 3,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce85c82-1-29-3-500-695f4bd5f6517caf7e9d065741ba25e2.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-3-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-d53a89f9a3c769b3cd074c99fcc5cb18.png",
-        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/BW9J68-ce85c85-1-29-3-500-d2750f16ad56f53cda3230c27fc2c74d.png",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                180.0,
-                -351.6666666666667
-              ],
-              "p2": [
-                180.0,
-                1575.0
-              ],
-              "p3": [
-                2106.6666666666665,
-                1575.0
-              ],
-              "p4": [
-                2106.6666666666665,
-                -351.6666666666667
-              ]
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce85c82-1-29-3-500-695f4bd5f6517caf7e9d065741ba25e2.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-3-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-d53a89f9a3c769b3cd074c99fcc5cb18.png",
+      "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/BW9J68-ce85c85-1-29-3-500-d2750f16ad56f53cda3230c27fc2c74d.png",
+      "faces": [
+        {
+          "mask": "03_mask.png",
+          "x": 180.0,
+          "y": -351.6666666666667,
+          "width": 1926.6666666666665,
+          "height": 1926.6666666666667,
+          "ctrlPos": [
+            {
+              "x": -963.3333333333333,
+              "y": -963.3333333333333,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": 0.0,
+              "y": -963.3333333333333,
+              "z": 0
+            },
+            {
+              "x": 963.3333333333333,
+              "y": -963.3333333333333,
+              "z": 0
+            },
+            {
+              "x": -963.3333333333333,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 963.3333333333333,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": -963.3333333333333,
+              "y": 963.3333333333334,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 963.3333333333334,
+              "z": 0
+            },
+            {
+              "x": 963.3333333333333,
+              "y": 963.3333333333334,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "180,-351.6666666666667",
+              "p2": "180,1575",
+              "p3": "2106.6666666666665,1575",
+              "p4": "2106.6666666666665,-351.6666666666667"
+            },
+            "detail3d": {
               "model_id": 8835,
+              "angle": 0,
               "left": 108,
               "top": -211,
               "width": 1156,
@@ -714,39 +879,81 @@
               "enable_hdr": -1
             }
           }
-        ]
-      },
-      {
-        "position": 4,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce866e1-1-29-4-500-95e4bca040fa9316b4e5361117861c53.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-4-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-cf3b9a35cc3b5e8dc45d93764556e263.png",
-        "texture": "",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                133.33333333333334,
-                -83.33333333333333
-              ],
-              "p2": [
-                133.33333333333334,
-                680.0
-              ],
-              "p3": [
-                896.6666666666666,
-                680.0
-              ],
-              "p4": [
-                896.6666666666666,
-                -83.33333333333333
-              ]
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce866e1-1-29-4-500-95e4bca040fa9316b4e5361117861c53.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-4-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-cf3b9a35cc3b5e8dc45d93764556e263.png",
+      "texture": "",
+      "faces": [
+        {
+          "mask": "04_mask.png",
+          "x": 133.33333333333334,
+          "y": -83.33333333333333,
+          "width": 763.3333333333333,
+          "height": 763.3333333333334,
+          "ctrlPos": [
+            {
+              "x": -381.66666666666663,
+              "y": -381.66666666666663,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": 0.0,
+              "y": -381.66666666666663,
+              "z": 0
+            },
+            {
+              "x": 381.66666666666663,
+              "y": -381.66666666666663,
+              "z": 0
+            },
+            {
+              "x": -381.66666666666663,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 381.66666666666663,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": -381.66666666666663,
+              "y": 381.6666666666667,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 381.6666666666667,
+              "z": 0
+            },
+            {
+              "x": 381.66666666666663,
+              "y": 381.6666666666667,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "133.33333333333334,-83.33333333333333",
+              "p2": "133.33333333333334,680",
+              "p3": "896.6666666666666,680",
+              "p4": "896.6666666666666,-83.33333333333333"
+            },
+            "detail3d": {
               "model_id": 8835,
+              "angle": 0,
               "left": 80,
               "top": -50,
               "width": 458,
@@ -894,71 +1101,155 @@
               "enable_hdr": -1
             }
           }
-        ]
-      },
-      {
-        "position": 6,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-cee6997-1-29-6-500-de4070e09b8da76e2b2c408d5128d7dd.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-6-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-570d41b31a29eab4490a95b5ef3b1eeb.png",
-        "texture": "",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 3,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                0.0,
-                0.0
-              ],
-              "p2": [
-                0.0,
-                600.0
-              ],
-              "p3": [
-                600.0,
-                600.0
-              ],
-              "p4": [
-                600.0,
-                0.0
-              ]
-            }
-          }
-        ]
-      },
-      {
-        "position": 5,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce896f6-1-29-5-500-24f067ab2010999ca89c957a70d0c950.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-5-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-5d4b87ce84d6267954b11da6f754bef3.png",
-        "texture": "",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                111.66666666666667,
-                -181.66666666666666
-              ],
-              "p2": [
-                111.66666666666667,
-                603.3333333333334
-              ],
-              "p3": [
-                896.6666666666666,
-                603.3333333333334
-              ],
-              "p4": [
-                896.6666666666666,
-                -181.66666666666666
-              ]
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-cee6997-1-29-6-500-de4070e09b8da76e2b2c408d5128d7dd.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-6-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-570d41b31a29eab4490a95b5ef3b1eeb.png",
+      "texture": "",
+      "faces": [
+        {
+          "mask": "06_mask.png",
+          "x": 0.0,
+          "y": 0.0,
+          "width": 600.0,
+          "height": 600.0,
+          "ctrlPos": [
+            {
+              "x": -300.0,
+              "y": -300.0,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": 0.0,
+              "y": -300.0,
+              "z": 0
+            },
+            {
+              "x": 300.0,
+              "y": -300.0,
+              "z": 0
+            },
+            {
+              "x": -300.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 300.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": -300.0,
+              "y": 300.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 300.0,
+              "z": 0
+            },
+            {
+              "x": 300.0,
+              "y": 300.0,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 3,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "0,0",
+              "p2": "0,600",
+              "p3": "600,600",
+              "p4": "600,0"
+            },
+            "detail3d": null
+          }
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce896f6-1-29-5-500-24f067ab2010999ca89c957a70d0c950.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-5-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-5d4b87ce84d6267954b11da6f754bef3.png",
+      "texture": "",
+      "faces": [
+        {
+          "mask": "05_mask.png",
+          "x": 111.66666666666667,
+          "y": -181.66666666666666,
+          "width": 785.0,
+          "height": 785.0,
+          "ctrlPos": [
+            {
+              "x": -392.49999999999994,
+              "y": -392.5,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": -392.5,
+              "z": 0
+            },
+            {
+              "x": 392.5,
+              "y": -392.5,
+              "z": 0
+            },
+            {
+              "x": -392.49999999999994,
+              "y": 2.842170943040401e-14,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 392.5,
+              "y": 2.842170943040401e-14,
+              "z": 0
+            },
+            {
+              "x": -392.49999999999994,
+              "y": 392.5,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 392.5,
+              "z": 0
+            },
+            {
+              "x": 392.5,
+              "y": 392.5,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "111.66666666666667,-181.66666666666666",
+              "p2": "111.66666666666667,603.3333333333334",
+              "p3": "896.6666666666666,603.3333333333334",
+              "p4": "896.6666666666666,-181.66666666666666"
+            },
+            "detail3d": {
               "model_id": 8835,
+              "angle": 0,
               "left": 67,
               "top": -109,
               "width": 471,
@@ -1106,39 +1397,81 @@
               "enable_hdr": -1
             }
           }
-        ]
-      },
-      {
-        "position": 7,
-        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce896fa-1-29-7-500-b6f0723226bb5c5850442a5f6b09700f.png",
-        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-7-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-eb4183df2f5e5a0b132358fb966e67dc.png",
-        "texture": "",
-        "master": 0,
-        "use_view_id": 0,
-        "parts": [
-          {
-            "type": 2,
-            "target_view_id": 0,
-            "distort_params": {
-              "p1": [
-                166.66666666666666,
-                -128.33333333333334
-              ],
-              "p2": [
-                166.66666666666666,
-                553.3333333333334
-              ],
-              "p3": [
-                848.3333333333334,
-                553.3333333333334
-              ],
-              "p4": [
-                848.3333333333334,
-                -128.33333333333334
-              ]
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "effect": true,
+      "image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce896fa-1-29-7-500-b6f0723226bb5c5850442a5f6b09700f.png",
+      "effectImage": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-7-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-eb4183df2f5e5a0b132358fb966e67dc.png",
+      "texture": "",
+      "faces": [
+        {
+          "mask": "07_mask.png",
+          "x": 166.66666666666666,
+          "y": -128.33333333333334,
+          "width": 681.6666666666667,
+          "height": 681.6666666666667,
+          "ctrlPos": [
+            {
+              "x": -340.83333333333337,
+              "y": -340.83333333333337,
+              "z": 0
             },
-            "detail_3d": {
+            {
+              "x": 0.0,
+              "y": -340.83333333333337,
+              "z": 0
+            },
+            {
+              "x": 340.83333333333337,
+              "y": -340.83333333333337,
+              "z": 0
+            },
+            {
+              "x": -340.83333333333337,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": 340.83333333333337,
+              "y": 0.0,
+              "z": 0
+            },
+            {
+              "x": -340.83333333333337,
+              "y": 340.83333333333337,
+              "z": 0
+            },
+            {
+              "x": 0.0,
+              "y": 340.83333333333337,
+              "z": 0
+            },
+            {
+              "x": 340.83333333333337,
+              "y": 340.83333333333337,
+              "z": 0
+            }
+          ],
+          "raw": {
+            "partType": 2,
+            "targetViewId": 0,
+            "distortParams": {
+              "p1": "166.66666666666666,-128.33333333333334",
+              "p2": "166.66666666666666,553.3333333333334",
+              "p3": "848.3333333333334,553.3333333333334",
+              "p4": "848.3333333333334,-128.33333333333334"
+            },
+            "detail3d": {
               "model_id": 8835,
+              "angle": 0,
               "left": 100,
               "top": -77,
               "width": 409,
@@ -1286,8 +1619,8 @@
               "enable_hdr": -1
             }
           }
-        ]
-      }
-    ]
-  }
-]
+        }
+      ]
+    }
+  ]
+}
