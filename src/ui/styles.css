@@ -127,8 +127,32 @@ button:disabled {
 
 .designer-workspace {
   display: grid;
-  grid-template-columns: 52px 294px minmax(720px, 1fr) 390px;
   height: calc(100vh - 56px);
+}
+
+.panel-resizer {
+  background: #e6edf7;
+  cursor: col-resize;
+  position: relative;
+}
+
+.panel-resizer::after {
+  background: #b8c7d9;
+  border-radius: 999px;
+  content: "";
+  height: 42px;
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.12s ease;
+  width: 3px;
+}
+
+.panel-resizer:hover::after,
+.panel-resizer:focus-visible::after {
+  opacity: 1;
 }
 
 .rail {
@@ -178,6 +202,7 @@ button:disabled {
 .effect-panel {
   background: #fff;
   overflow: auto;
+  min-width: 0;
 }
 
 .asset-panel {
@@ -476,6 +501,7 @@ button:disabled {
   box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
   line-height: 0;
   overflow: hidden;
+  width: 100%;
 }
 
 .effect-preview-button {
@@ -484,6 +510,7 @@ button:disabled {
   display: block;
   padding: 0;
   text-align: left;
+  width: 100%;
 }
 
 .effect-preview-button:focus-visible {
@@ -770,12 +797,16 @@ button:disabled {
 .pod-scene-picker {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-bottom: 10px;
 }
 
 .pod-scene-picker {
   grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.pod-template-picker > button:first-child {
+  display: none;
 }
 
 .pod-template-picker button,

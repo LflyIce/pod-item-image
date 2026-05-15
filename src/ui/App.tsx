@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { ChangeEvent, PointerEvent as ReactPointerEvent, useEffect, useMemo, useRef, useState } from 'react';
 import type { SceneContext } from 'konva/lib/Context';
 import {
   ArrowUp,
@@ -23,7 +23,7 @@ import { getProductById, getVariant } from '../domain/catalog';
 import { createBezierSurfaceMesh } from '../domain/bezierSurface';
 import { normalOffset } from '../domain/normalDisplacement';
 import { PerspectiveTransform } from '../domain/perspectiveTransform';
-import { DEMO_POD_TEMPLATES, getDemoPodTemplate, podTemplateAssetPath, podTemplateScenePath, type PodFace } from '../domain/podTemplate';
+import { DEMO_POD_TEMPLATES, getDemoPodTemplate, getPodTemplatePrintRect, podTemplateAssetPath, podTemplateScenePath, type PodFace } from '../domain/podTemplate';
 import { applyHighlightOverlay, getPreviewRenderMode, getPreviewSurfacePath, shadeDesignPixel, shouldRenderSurfaceEffects } from '../domain/previewCompositing';
 import {
   applyTemplate,
@@ -152,6 +152,8 @@ export function App() {
   const [activeMockupTemplateId, setActiveMockupTemplateId] = useState<string | null>(null);
   const [activePodTemplateId, setActivePodTemplateId] = useState<string | null>('0001');
   const [activePodSceneId, setActivePodSceneId] = useState<string>('01');
+  const [assetPanelWidth, setAssetPanelWidth] = useState(294);
+  const [effectPanelWidth, setEffectPanelWidth] = useState(390);
   const [project, setProject] = useState<DesignProject>(() => createBlankProject('door-curtain', 'curtain-white'));
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
   const [assetTab, setAssetTab] = useState<'templates' | 'mine' | 'favorites'>('templates');
@@ -332,6 +334,29 @@ export function App() {
     );
   };
 
+  const startPanelResize = (panel: 'asset' | 'effect', event: ReactPointerEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const startX = event.clientX;
+    const startWidth = panel === 'asset' ? assetPanelWidth : effectPanelWidth;
+
+    const onPointerMove = (moveEvent: PointerEvent) => {
+      const delta = moveEvent.clientX - startX;
+      if (panel === 'asset') {
+        setAssetPanelWidth(clampValue(startWidth + delta, 240, 430));
+      } else {
+        setEffectPanelWidth(clampValue(startWidth - delta, 320, 620));
+      }
+    };
+
+    const onPointerUp = () => {
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+    };
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+  };
+
   if (activeScreen === 'template-manager') {
     return (
       <TemplateManager
@@ -381,7 +406,12 @@ export function App() {
         <button className="save-button"><Save size={15} />保存</button>
       </header>
 
-      <section className="designer-workspace">
+      <section
+        className="designer-workspace"
+        style={{
+          gridTemplateColumns: `52px ${assetPanelWidth}px 8px minmax(520px, 1fr) 8px ${effectPanelWidth}px`
+        }}
+      >
         <aside className="rail">
           <RailItem active icon={<ImagePlus size={22} />} label="图库" />
           <RailItem icon={<Sparkles size={22} />} label="AI作图" badge="NEW" />
@@ -420,6 +450,7 @@ export function App() {
           <button className="upload-strip" onClick={applyDefaultTemplate}>应用整套模板</button>
           <input ref={fileInputRef} className="hidden-input" type="file" accept="image/png,image/jpeg" onChange={onUpload} />
         </aside>
+        <PanelResizeHandle label="调整素材面板宽度" onPointerDown={(event) => startPanelResize('asset', event)} />
 
         <section className="editor-stage">
           <div className="side-view-chip">A面</div>
@@ -464,6 +495,7 @@ export function App() {
             onTextChange={(updates) => selectedLayerId && setProject(updateTextLayer(project, selectedLayerId, updates))}
           />
         </section>
+        <PanelResizeHandle label="调整效果面板宽度" onPointerDown={(event) => startPanelResize('effect', event)} />
 
         <aside className="effect-panel">
           <div className="preview-switch">
@@ -505,7 +537,7 @@ export function App() {
             </div>
           ) : null}
           <button className="effect-preview-button" onClick={() => setPreviewOpen(true)} aria-label="预览效果图">
-            <ProductPreview product={product} layers={layers} />
+            <ProductPreview product={product} layers={layers} size={Math.max(260, effectPanelWidth - 32)} />
           </button>
           <div className="effect-thumbs">
             <button className="active" onClick={() => setPreviewOpen(true)}><img src="/assets/door-curtain-base.png" alt="" /><span>效果图1</span></button>
@@ -544,6 +576,18 @@ function RailItem({ icon, label, active, badge }: { icon: React.ReactNode; label
       {badge ? <em>{badge}</em> : null}
       {label}
     </button>
+  );
+}
+
+function PanelResizeHandle({ label, onPointerDown }: { label: string; onPointerDown: (event: ReactPointerEvent<HTMLDivElement>) => void }) {
+  return (
+    <div
+      aria-label={label}
+      className="panel-resizer"
+      role="separator"
+      tabIndex={0}
+      onPointerDown={onPointerDown}
+    />
   );
 }
 
@@ -713,6 +757,17 @@ function KonvaEditor({
       <Stage width={view.canvas.width} height={view.canvas.height} onMouseDown={(event) => event.target === event.target.getStage() && onSelect(null)}>
         <Layer>
           <Rect width={view.canvas.width} height={view.canvas.height} fill="#ffffff" shadowBlur={18} shadowColor="rgba(15,23,42,.12)" />
+          <Rect
+            x={view.printArea.x}
+            y={view.printArea.y}
+            width={view.printArea.width}
+            height={view.printArea.height}
+            stroke="#0b5cff"
+            strokeWidth={2}
+            dash={[8, 7]}
+            opacity={0.8}
+            listening={false}
+          />
 
           <Group
             clipX={view.printArea.x}
@@ -738,8 +793,10 @@ function KonvaEditor({
   );
 }
 
-function ProductPreview({ product, layers }: { product: Product; layers: DesignLayer[] }) {
+function ProductPreview({ product, layers, size = 500 }: { product: Product; layers: DesignLayer[]; size?: number }) {
   const view = product.views[0];
+  const previewSize = Math.round(size);
+  const previewScale = previewSize / 500;
   const baseImage = useImageElement(product.mockup.baseImage);
   const textureImage = useImageElement(product.mockup.textureImage);
   const maskImage = useImageElement(product.mockup.maskImage);
@@ -747,12 +804,21 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   const normalImage = useImageElement(product.mockup.normalImage);
   const textureArea = product.mockup.textureArea ?? view.printArea;
   const texturePolygon = product.mockup.texturePolygon;
+  const warpPoints = product.mockup.warpPoints;
   const previewSurfacePath = useMemo(() => getPreviewSurfacePath(product), [product]);
+  const scaledTextureArea = useMemo(() => scaleRect(textureArea, previewScale), [textureArea, previewScale]);
+  const scaledPreviewSurfacePath = useMemo(
+    () => previewSurfacePath.map((point) => scalePoint(point, previewScale)),
+    [previewSurfacePath, previewScale]
+  );
+  const scaledWarpPoints = useMemo(
+    () => (warpPoints ? { ...warpPoints, dst: warpPoints.dst.map((point) => scalePoint(point, previewScale)) } : undefined),
+    [warpPoints, previewScale]
+  );
   const textureBlendMode = product.mockup.textureBlendMode ?? 'source-over';
   const textureOpacity = product.mockup.textureOpacity ?? 0.38;
   const highlightOpacity = product.mockup.highlightOpacity ?? 0.28;
   const normalStrength = product.mockup.normalStrength ?? 0.16;
-  const warpPoints = product.mockup.warpPoints;
   const renderMode = getPreviewRenderMode(product);
   const renderSurfaceEffects = shouldRenderSurfaceEffects(layers);
   const podTemplate = product.mockup.podTemplate ? getDemoPodTemplate(product.mockup.podTemplate.templateId) : undefined;
@@ -829,13 +895,21 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     if (renderMode !== 'pod-template-2d' && !baseImage && product.mockup.baseImage) return;
     if (renderMode === 'pod-template-2d' && !podImagesReady) return;
 
-    const PVW = 500;
-    const PVH = 500;
+    const PVW = previewSize;
+    const PVH = previewSize;
     const srcW = view.printArea.width;
     const srcH = view.printArea.height;
 
     if (renderMode === 'pod-template-2d' && podTemplate && podScene && podBaseImage) {
-      const designCanvas = renderDesignLayersToCanvas(layers, loadedImages.current, view.printArea, podTemplate.width, podTemplate.height);
+      const podPrintRect = getPodTemplatePrintRect(podTemplate);
+      const designCanvas = renderDesignLayersToCanvas(
+        layers,
+        loadedImages.current,
+        view.printArea,
+        podBaseImage.naturalWidth || podTemplate.width,
+        podBaseImage.naturalHeight || podTemplate.height,
+        podPrintRect
+      );
       const canvas = document.createElement('canvas');
       canvas.width = PVW;
       canvas.height = PVH;
@@ -878,12 +952,18 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
     surfaceCanvas.height = PVH;
     const surfaceContext = surfaceCanvas.getContext('2d')!;
 
-    if (renderMode === 'perspective-2d' && warpPoints?.dst.length === 4) {
-      renderPerspectiveSurface(surfaceContext, designCanvas, srcW, srcH, warpPoints.dst);
+    if (renderMode === 'perspective-2d' && scaledWarpPoints?.dst.length === 4) {
+      renderPerspectiveSurface(surfaceContext, designCanvas, srcW, srcH, scaledWarpPoints.dst);
     } else {
       surfaceContext.save();
-      clipToPreviewSurface(surfaceContext, previewSurfacePath);
-      surfaceContext.drawImage(designCanvas, textureArea.x, textureArea.y, textureArea.width, textureArea.height);
+      clipToPreviewSurface(surfaceContext, scaledPreviewSurfacePath);
+      surfaceContext.drawImage(
+        designCanvas,
+        scaledTextureArea.x,
+        scaledTextureArea.y,
+        scaledTextureArea.width,
+        scaledTextureArea.height
+      );
       surfaceContext.restore();
     }
 
@@ -923,13 +1003,13 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
 
     // Step 6: Highlight overlay (screen blend) for specular light on the design
     if (renderSurfaceEffects && highlightImage) {
-      applyHighlightOverlay(ctx, highlightImage, previewSurfacePath, PVW, PVH, highlightOpacity);
+      applyHighlightOverlay(ctx, highlightImage, scaledPreviewSurfacePath, PVW, PVH, highlightOpacity);
     }
 
     // Cloth texture overlay
     if (renderSurfaceEffects && textureImage) {
       ctx.save();
-      clipToPreviewSurface(ctx, previewSurfacePath);
+      clipToPreviewSurface(ctx, scaledPreviewSurfacePath);
       ctx.globalAlpha = textureOpacity;
       ctx.globalCompositeOperation = textureBlendMode;
       ctx.drawImage(textureImage, 0, 0, PVW, PVH);
@@ -940,34 +1020,34 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   }, [
     layersJson, loadCount, baseImage, textureImage, maskImage, highlightImage, normalImage,
     podBaseImage, podEffectImage, podImagesReady, podMaskImages, podMaskLoadCount, podScene, podTemplate,
-    textureBlendMode, textureOpacity, highlightOpacity, normalStrength, renderMode, warpPoints,
-    renderSurfaceEffects, previewSurfacePath, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
-    allImagesReady, imageLayers.length
+    textureBlendMode, textureOpacity, highlightOpacity, normalStrength, renderMode, scaledWarpPoints,
+    renderSurfaceEffects, scaledPreviewSurfacePath, scaledTextureArea, view.printArea.x, view.printArea.y, view.printArea.width, view.printArea.height,
+    allImagesReady, imageLayers.length, previewSize
   ]);
 
   // If warp is not configured, fall back to Konva rendering
   if (!warpPoints) {
-    const scaleX = textureArea.width / view.printArea.width;
-    const scaleY = textureArea.height / view.printArea.height;
+    const scaleX = scaledTextureArea.width / view.printArea.width;
+    const scaleY = scaledTextureArea.height / view.printArea.height;
     const clipFunc = (context: SceneContext) => {
-      if (previewSurfacePath.length >= 3) {
+      if (scaledPreviewSurfacePath.length >= 3) {
         context.beginPath();
-        context.moveTo(previewSurfacePath[0].x, previewSurfacePath[0].y);
-        for (const point of previewSurfacePath.slice(1)) {
+        context.moveTo(scaledPreviewSurfacePath[0].x, scaledPreviewSurfacePath[0].y);
+        for (const point of scaledPreviewSurfacePath.slice(1)) {
           context.lineTo(point.x, point.y);
         }
         context.closePath();
         return;
       }
-      context.rect(textureArea.x, textureArea.y, textureArea.width, textureArea.height);
+      context.rect(scaledTextureArea.x, scaledTextureArea.y, scaledTextureArea.width, scaledTextureArea.height);
     };
 
     return (
       <div className="effect-canvas">
-        <Stage width={500} height={500}>
+        <Stage width={previewSize} height={previewSize}>
           <Layer>
-            <Rect width={500} height={500} fill="#f1f5f9" />
-            {baseImage ? <KonvaImage image={baseImage} width={500} height={500} listening={false} /> : null}
+            <Rect width={previewSize} height={previewSize} fill="#f1f5f9" />
+            {baseImage ? <KonvaImage image={baseImage} width={previewSize} height={previewSize} listening={false} /> : null}
             <Group clipFunc={clipFunc} listening={false}>
               {layers.map((layer) => (
                 <MappedPreviewLayer
@@ -975,8 +1055,8 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
                   layer={layer}
                   originX={view.printArea.x}
                   originY={view.printArea.y}
-                  targetX={textureArea.x}
-                  targetY={textureArea.y}
+                  targetX={scaledTextureArea.x}
+                  targetY={scaledTextureArea.y}
                   scaleX={scaleX}
                   scaleY={scaleY}
                 />
@@ -984,20 +1064,20 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
               {renderSurfaceEffects && textureImage ? (
                 <KonvaImage
                   image={textureImage}
-                  width={500}
-                  height={500}
+                  width={previewSize}
+                  height={previewSize}
                   opacity={textureOpacity}
                   globalCompositeOperation={textureBlendMode}
                   listening={false}
                 />
               ) : null}
               <Rect
-                x={textureArea.x}
-                y={textureArea.y}
-                width={textureArea.width}
-                height={textureArea.height}
-                fillLinearGradientStartPoint={{ x: textureArea.x, y: textureArea.y }}
-                fillLinearGradientEndPoint={{ x: textureArea.x + textureArea.width, y: textureArea.y }}
+                x={scaledTextureArea.x}
+                y={scaledTextureArea.y}
+                width={scaledTextureArea.width}
+                height={scaledTextureArea.height}
+                fillLinearGradientStartPoint={{ x: scaledTextureArea.x, y: scaledTextureArea.y }}
+                fillLinearGradientEndPoint={{ x: scaledTextureArea.x + scaledTextureArea.width, y: scaledTextureArea.y }}
                 fillLinearGradientColorStops={[0, 'rgba(0,0,0,.3)', 0.22, 'rgba(255,255,255,.2)', 0.52, 'rgba(0,0,0,.16)', 0.75, 'rgba(255,255,255,.2)', 1, 'rgba(0,0,0,.28)']}
                 opacity={renderSurfaceEffects && textureImage ? 0.04 : 0.18}
               />
@@ -1011,14 +1091,14 @@ function ProductPreview({ product, layers }: { product: Product; layers: DesignL
   // Warp mode: render via composited canvas image
   return (
     <div className="effect-canvas">
-      <Stage width={500} height={500}>
+      <Stage width={previewSize} height={previewSize}>
         <Layer>
-          <Rect width={500} height={500} fill="#f1f5f9" />
+          <Rect width={previewSize} height={previewSize} fill="#f1f5f9" />
           {previewImage ? (
             <KonvaImage
               image={previewImage}
-              width={500}
-              height={500}
+              width={previewSize}
+              height={previewSize}
               listening={false}
             />
           ) : null}
@@ -1033,21 +1113,27 @@ function renderDesignLayersToCanvas(
   loadedImages: Map<string, HTMLImageElement>,
   printArea: { x: number; y: number; width: number; height: number },
   outputWidth: number,
-  outputHeight: number
+  outputHeight: number,
+  destinationArea: { x: number; y: number; width: number; height: number } = {
+    x: 0,
+    y: 0,
+    width: outputWidth,
+    height: outputHeight
+  }
 ) {
   const canvas = document.createElement('canvas');
   canvas.width = outputWidth;
   canvas.height = outputHeight;
   const context = canvas.getContext('2d')!;
-  const scaleX = outputWidth / printArea.width;
-  const scaleY = outputHeight / printArea.height;
+  const scaleX = destinationArea.width / printArea.width;
+  const scaleY = destinationArea.height / printArea.height;
 
   const sorted = [...layers].sort((a, b) => a.zIndex - b.zIndex);
   for (const layer of sorted) {
     context.save();
     context.globalAlpha = layer.opacity;
-    const lx = (layer.x - printArea.x) * scaleX;
-    const ly = (layer.y - printArea.y) * scaleY;
+    const lx = destinationArea.x + (layer.x - printArea.x) * scaleX;
+    const ly = destinationArea.y + (layer.y - printArea.y) * scaleY;
     const width = layer.width * scaleX;
     const height = layer.height * scaleY;
     const cx = lx + width / 2;
@@ -1097,6 +1183,7 @@ function renderBezierSurface(
     const p0 = mesh.points[triangle.i0];
     const p1 = mesh.points[triangle.i1];
     const p2 = mesh.points[triangle.i2];
+    const [c0, c1, c2] = expandTriangle([p0, p1, p2], 0.9);
     const s0x = p0.u * srcW;
     const s0y = p0.v * srcH;
     const s1x = p1.u * srcW;
@@ -1116,9 +1203,9 @@ function renderBezierSurface(
 
     context.save();
     context.beginPath();
-    context.moveTo(p0.x, p0.y);
-    context.lineTo(p1.x, p1.y);
-    context.lineTo(p2.x, p2.y);
+    context.moveTo(c0.x, c0.y);
+    context.lineTo(c1.x, c1.y);
+    context.lineTo(c2.x, c2.y);
     context.closePath();
     context.clip();
     context.setTransform(a, b, c, d, e, f);
@@ -1127,6 +1214,23 @@ function renderBezierSurface(
   }
 
   context.setTransform(1, 0, 0, 1, 0, 0);
+}
+
+function expandTriangle(points: Array<{ x: number; y: number }>, amount: number) {
+  const center = {
+    x: (points[0].x + points[1].x + points[2].x) / 3,
+    y: (points[0].y + points[1].y + points[2].y) / 3
+  };
+
+  return points.map((point) => {
+    const dx = point.x - center.x;
+    const dy = point.y - center.y;
+    const length = Math.hypot(dx, dy) || 1;
+    return {
+      x: point.x + (dx / length) * amount,
+      y: point.y + (dy / length) * amount
+    };
+  });
 }
 
 function applyAlphaMask(
@@ -1442,6 +1546,23 @@ function getPixel(image: ImageData, width: number, x: number, y: number) {
 
 function mix(left: number, right: number, amount: number) {
   return Math.round(left + (right - left) * amount);
+}
+
+function clampValue(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, Math.round(value)));
+}
+
+function scalePoint(point: Point, scale: number): Point {
+  return { x: point.x * scale, y: point.y * scale };
+}
+
+function scaleRect(rect: { x: number; y: number; width: number; height: number }, scale: number) {
+  return {
+    x: rect.x * scale,
+    y: rect.y * scale,
+    width: rect.width * scale,
+    height: rect.height * scale
+  };
 }
 
 function clipToPreviewSurface(
