@@ -1,0 +1,1293 @@
+[
+  {
+    "color": {
+      "id": 29,
+      "name": "黑色",
+      "en_name": "Black",
+      "hex": "#000000"
+    },
+    "views": [
+      {
+        "position": 1,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce85c6e-1-29-1-500-87d599d00359641506ae9f96afcd016d.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-1-29-150-698d51a19d8a121ce581499d7b7016682c7840b096ce964ebe3afa254471f137-1-c02e526c4bc36753d57aaf41491a0c08.png",
+        "texture": "",
+        "master": 1,
+        "use_view_id": 1,
+        "parts": [
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                88.33333333333333,
+                -163.33333333333334
+              ],
+              "p2": [
+                88.33333333333333,
+                671.6666666666666
+              ],
+              "p3": [
+                923.3333333333334,
+                671.6666666666666
+              ],
+              "p4": [
+                923.3333333333334,
+                -163.33333333333334
+              ]
+            },
+            "detail_3d": {
+              "model_id": 8835,
+              "left": 53,
+              "top": -98,
+              "width": 501,
+              "height": 501,
+              "position": {
+                "x": 0.5915100379182885,
+                "y": 0.7422331303866099,
+                "z": -9.0858508220417
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417
+                },
+                "mainPointIntensity": "1.31",
+                "ambientLightIntensity": "0.89",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.1336431404196,
+                  "y": 0.1676968438565,
+                  "z": -2.0528166208557
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": 0.087945904272687,
+                  "y": -0.069984093771708,
+                  "z": 0.005136103167019499
+                },
+                "zoom": "6",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "-20.5",
+                      "y": "8.5",
+                      "z": "-11.5"
+                    },
+                    "intensity": "1.4",
+                    "decay": 0,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 15605,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 2000,
+                  "height": 2000,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 33.33,
+                    "top": 33.33,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 33.33,
+                    "minY": 33.33,
+                    "centerX": 1003.33,
+                    "centerY": 1003.33,
+                    "visible": true
+                  }
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_HZS1456_A_scale100&100_custom",
+                  "face_list": [
+                    {
+                      "id": 15605,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 2000,
+                      "height": 2000,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 33.33,
+                        "top": 33.33,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 33.33,
+                        "minY": 33.33,
+                        "centerX": 1003.33,
+                        "centerY": 1003.33,
+                        "visible": true
+                      }
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/MWPE4UO3BQ5GJ-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 216276863,
+                  "file_name": "ClothingAccessories_YJ1806_01_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GTGYF4R7UC8T4-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5q6AfKpvAAzlRD9CnO8812.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 216276868,
+                  "file_name": "HouseholdItems_HZS1456_01_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/TSAFMF9TLK45W-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAf4VGAByupN14evM457.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 216276869,
+                  "file_name": "HouseholdItems_HZS1456_01_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GHD5NRRO6OW5T-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/C8/wKgEPGey5peAW9r-AAACEezLkfY83.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 216276870,
+                  "file_name": "HouseholdItems_HZS1456_01",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/V9SCBEVBJAGJU-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAIItVAAe-OAJnKHc020.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce852d9-1-29-2-500-ab9538b918a4edad8165bb58e3061da9.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-2-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-5c3d184aeddb174abf7a597b96bdf776.png",
+        "texture": "",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                21.666666666666668,
+                -6.666666666666667
+              ],
+              "p2": [
+                21.666666666666668,
+                766.6666666666666
+              ],
+              "p3": [
+                795.0,
+                766.6666666666666
+              ],
+              "p4": [
+                795.0,
+                -6.666666666666667
+              ]
+            },
+            "detail_3d": {
+              "model_id": 8836,
+              "left": 13,
+              "top": -4,
+              "width": 464,
+              "height": 464,
+              "position": {
+                "x": 0.6899081941021022,
+                "y": 0.8657041905661008,
+                "z": -10.597289193225
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": 0.6899081941021,
+                  "y": 0.8657041905661,
+                  "z": -10.597289193225
+                },
+                "mainPointIntensity": "1.31",
+                "ambientLightIntensity": "0.89",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.6899081941021,
+                  "y": 0.8657041905661,
+                  "z": -10.597289193225,
+                  "isVector3": true
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": 0.087945904272687,
+                  "y": -0.069984093771708,
+                  "z": 0.005136103167019499
+                },
+                "zoom": "6",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "-15.5",
+                      "y": "8.5",
+                      "z": "-11.5"
+                    },
+                    "intensity": "1.4",
+                    "decay": 0,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 15606,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 2000,
+                  "height": 2000,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 33.33,
+                    "top": 33.33,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 33.33,
+                    "minY": 33.33,
+                    "centerX": 1003.33,
+                    "centerY": 1003.33,
+                    "visible": true
+                  }
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_HZS1456_A_scale100&100_custom",
+                  "face_list": [
+                    {
+                      "id": 15606,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 2000,
+                      "height": 2000,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 33.33,
+                        "top": 33.33,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 33.33,
+                        "minY": 33.33,
+                        "centerX": 1003.33,
+                        "centerY": 1003.33,
+                        "visible": true
+                      }
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/BF69QHA6W72GA-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 216276790,
+                  "file_name": "ClothingAccessories_YJ1806_01_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/7EAT9DE3AYFPV-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/7E/29/wKgCqGey5oOAOCsbAAzlRD9CnO8370.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 216276796,
+                  "file_name": "HouseholdItems_HZS1456_02_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/XCCEX7KAJL935-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/7E/29/wKgCqGey5oWACi3TABvcSOu3QVE765.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 216276797,
+                  "file_name": "HouseholdItems_HZS1456_02_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/INDPZO2POLDS6-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/9F/BA/wKgCqWey5oWAH1TLAAACEezLkfY15.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 216276798,
+                  "file_name": "HouseholdItems_HZS1456_02",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/KWSWTHYWMOTXO-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/7E/29/wKgCqGey5oWAKvRrAAc4oFw66S4307.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          },
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                205.0,
+                383.3333333333333
+              ],
+              "p2": [
+                205.0,
+                1156.6666666666667
+              ],
+              "p3": [
+                978.3333333333334,
+                1156.6666666666667
+              ],
+              "p4": [
+                978.3333333333334,
+                383.3333333333333
+              ]
+            },
+            "detail_3d": {
+              "model_id": 8836,
+              "left": 123,
+              "top": 230,
+              "width": 464,
+              "height": 464,
+              "position": {
+                "x": 0.6899081941021022,
+                "y": 0.8657041905661008,
+                "z": -10.597289193225
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": 0.6899081941021,
+                  "y": 0.8657041905661,
+                  "z": -10.597289193225
+                },
+                "mainPointIntensity": "1.31",
+                "ambientLightIntensity": "0.89",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.6899081941021,
+                  "y": 0.8657041905661,
+                  "z": -10.597289193225,
+                  "isVector3": true
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": -3.0536507676316,
+                  "y": 0.069203606845766,
+                  "z": 3.1364568298471
+                },
+                "zoom": "6",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "-15.5",
+                      "y": "8.5",
+                      "z": "-11.5"
+                    },
+                    "intensity": "1.4",
+                    "decay": 0,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 15606,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 2000,
+                  "height": 2000,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 33.33,
+                    "top": 33.33,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 33.33,
+                    "minY": 33.33,
+                    "centerX": 1003.33,
+                    "centerY": 1003.33,
+                    "visible": true
+                  }
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_HZS1456_A_scale100&100_custom",
+                  "face_list": [
+                    {
+                      "id": 15606,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 2000,
+                      "height": 2000,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 33.33,
+                        "top": 33.33,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 33.33,
+                        "minY": 33.33,
+                        "centerX": 1003.33,
+                        "centerY": 1003.33,
+                        "visible": true
+                      }
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/BF69QHA6W72GA-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 216276790,
+                  "file_name": "ClothingAccessories_YJ1806_01_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/7EAT9DE3AYFPV-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/7E/29/wKgCqGey5oOAOCsbAAzlRD9CnO8370.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 216276796,
+                  "file_name": "HouseholdItems_HZS1456_02_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/XCCEX7KAJL935-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/7E/29/wKgCqGey5oWACi3TABvcSOu3QVE765.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 216276797,
+                  "file_name": "HouseholdItems_HZS1456_02_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/INDPZO2POLDS6-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/9F/BA/wKgCqWey5oWAH1TLAAACEezLkfY15.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 216276798,
+                  "file_name": "HouseholdItems_HZS1456_02",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/KWSWTHYWMOTXO-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group6/M00/7E/29/wKgCqGey5oWAKvRrAAc4oFw66S4307.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          }
+        ]
+      },
+      {
+        "position": 3,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce85c82-1-29-3-500-695f4bd5f6517caf7e9d065741ba25e2.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-3-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-d53a89f9a3c769b3cd074c99fcc5cb18.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/BW9J68-ce85c85-1-29-3-500-d2750f16ad56f53cda3230c27fc2c74d.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                180.0,
+                -351.6666666666667
+              ],
+              "p2": [
+                180.0,
+                1575.0
+              ],
+              "p3": [
+                2106.6666666666665,
+                1575.0
+              ],
+              "p4": [
+                2106.6666666666665,
+                -351.6666666666667
+              ]
+            },
+            "detail_3d": {
+              "model_id": 8835,
+              "left": 108,
+              "top": -211,
+              "width": 1156,
+              "height": 1156,
+              "position": {
+                "x": 0.5915100379182885,
+                "y": 0.7422331303866099,
+                "z": -9.0858508220417
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417
+                },
+                "mainPointIntensity": "1.31",
+                "ambientLightIntensity": "0.89",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417,
+                  "isVector3": true
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": 0.087945904272687,
+                  "y": -0.069984093771708,
+                  "z": 0.005136103167019499
+                },
+                "zoom": "6",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "-19.5",
+                      "y": "8.5",
+                      "z": "-11.5"
+                    },
+                    "intensity": "1.4",
+                    "decay": 0,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 15605,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 2000,
+                  "height": 2000,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 33.33,
+                    "top": 33.33,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 33.33,
+                    "minY": 33.33,
+                    "centerX": 1003.33,
+                    "centerY": 1003.33,
+                    "visible": true
+                  }
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_HZS1456_A_scale100&100_custom",
+                  "face_list": [
+                    {
+                      "id": 15605,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 2000,
+                      "height": 2000,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 33.33,
+                        "top": 33.33,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 33.33,
+                        "minY": 33.33,
+                        "centerX": 1003.33,
+                        "centerY": 1003.33,
+                        "visible": true
+                      }
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/MWPE4UO3BQ5GJ-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 216276863,
+                  "file_name": "ClothingAccessories_YJ1806_01_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GTGYF4R7UC8T4-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5q6AfKpvAAzlRD9CnO8812.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 216276868,
+                  "file_name": "HouseholdItems_HZS1456_01_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/TSAFMF9TLK45W-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAf4VGAByupN14evM457.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 216276869,
+                  "file_name": "HouseholdItems_HZS1456_01_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GHD5NRRO6OW5T-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/C8/wKgEPGey5peAW9r-AAACEezLkfY83.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 216276870,
+                  "file_name": "HouseholdItems_HZS1456_01",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/V9SCBEVBJAGJU-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAIItVAAe-OAJnKHc020.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          }
+        ]
+      },
+      {
+        "position": 4,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce866e1-1-29-4-500-95e4bca040fa9316b4e5361117861c53.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-4-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-cf3b9a35cc3b5e8dc45d93764556e263.png",
+        "texture": "",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                133.33333333333334,
+                -83.33333333333333
+              ],
+              "p2": [
+                133.33333333333334,
+                680.0
+              ],
+              "p3": [
+                896.6666666666666,
+                680.0
+              ],
+              "p4": [
+                896.6666666666666,
+                -83.33333333333333
+              ]
+            },
+            "detail_3d": {
+              "model_id": 8835,
+              "left": 80,
+              "top": -50,
+              "width": 458,
+              "height": 458,
+              "position": {
+                "x": 0.5915100379182885,
+                "y": 0.7422331303866099,
+                "z": -9.0858508220417
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417
+                },
+                "mainPointIntensity": "1.31",
+                "ambientLightIntensity": "0.89",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.5915100379182885,
+                  "y": 0.7422331303866099,
+                  "z": -9.0858508220417,
+                  "isVector3": true
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": 0.087945904272687,
+                  "y": -0.069984093771708,
+                  "z": 0.0051361031670194976
+                },
+                "zoom": "6",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "-20.5",
+                      "y": "8.5",
+                      "z": "-11.5"
+                    },
+                    "intensity": "1.4",
+                    "decay": 0,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 15605,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 2000,
+                  "height": 2000,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 33.33,
+                    "top": 33.33,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 33.33,
+                    "minY": 33.33,
+                    "centerX": 1003.33,
+                    "centerY": 1003.33,
+                    "visible": true
+                  }
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_HZS1456_A_scale100&100_custom",
+                  "face_list": [
+                    {
+                      "id": 15605,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 2000,
+                      "height": 2000,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 33.33,
+                        "top": 33.33,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 33.33,
+                        "minY": 33.33,
+                        "centerX": 1003.33,
+                        "centerY": 1003.33,
+                        "visible": true
+                      }
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/MWPE4UO3BQ5GJ-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 216276863,
+                  "file_name": "ClothingAccessories_YJ1806_01_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GTGYF4R7UC8T4-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5q6AfKpvAAzlRD9CnO8812.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 216276868,
+                  "file_name": "HouseholdItems_HZS1456_01_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/TSAFMF9TLK45W-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAf4VGAByupN14evM457.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 216276869,
+                  "file_name": "HouseholdItems_HZS1456_01_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GHD5NRRO6OW5T-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/C8/wKgEPGey5peAW9r-AAACEezLkfY83.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 216276870,
+                  "file_name": "HouseholdItems_HZS1456_01",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/V9SCBEVBJAGJU-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAIItVAAe-OAJnKHc020.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          }
+        ]
+      },
+      {
+        "position": 6,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-cee6997-1-29-6-500-de4070e09b8da76e2b2c408d5128d7dd.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-6-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-570d41b31a29eab4490a95b5ef3b1eeb.png",
+        "texture": "",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 3,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                0.0,
+                0.0
+              ],
+              "p2": [
+                0.0,
+                600.0
+              ],
+              "p3": [
+                600.0,
+                600.0
+              ],
+              "p4": [
+                600.0,
+                0.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 5,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce896f6-1-29-5-500-24f067ab2010999ca89c957a70d0c950.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-5-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-5d4b87ce84d6267954b11da6f754bef3.png",
+        "texture": "",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                111.66666666666667,
+                -181.66666666666666
+              ],
+              "p2": [
+                111.66666666666667,
+                603.3333333333334
+              ],
+              "p3": [
+                896.6666666666666,
+                603.3333333333334
+              ],
+              "p4": [
+                896.6666666666666,
+                -181.66666666666666
+              ]
+            },
+            "detail_3d": {
+              "model_id": 8835,
+              "left": 67,
+              "top": -109,
+              "width": 471,
+              "height": 471,
+              "position": {
+                "x": 0.5915100379182885,
+                "y": 0.7422331303866099,
+                "z": -9.0858508220417
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417
+                },
+                "mainPointIntensity": "1.31",
+                "ambientLightIntensity": "0.89",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417,
+                  "isVector3": true
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": 0.087945904272687,
+                  "y": -0.069984093771708,
+                  "z": 0.005136103167019499
+                },
+                "zoom": "6",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "-16.5",
+                      "y": "8.5",
+                      "z": "-6.5"
+                    },
+                    "intensity": "1.4",
+                    "decay": 0,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 15605,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 2000,
+                  "height": 2000,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 33.33,
+                    "top": 33.33,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 33.33,
+                    "minY": 33.33,
+                    "centerX": 1003.33,
+                    "centerY": 1003.33,
+                    "visible": true
+                  }
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_HZS1456_A_scale100&100_custom",
+                  "face_list": [
+                    {
+                      "id": 15605,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 2000,
+                      "height": 2000,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 33.33,
+                        "top": 33.33,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 33.33,
+                        "minY": 33.33,
+                        "centerX": 1003.33,
+                        "centerY": 1003.33,
+                        "visible": true
+                      }
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/MWPE4UO3BQ5GJ-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 216276863,
+                  "file_name": "ClothingAccessories_YJ1806_01_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GTGYF4R7UC8T4-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5q6AfKpvAAzlRD9CnO8812.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 216276868,
+                  "file_name": "HouseholdItems_HZS1456_01_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/TSAFMF9TLK45W-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAf4VGAByupN14evM457.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 216276869,
+                  "file_name": "HouseholdItems_HZS1456_01_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GHD5NRRO6OW5T-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/C8/wKgEPGey5peAW9r-AAACEezLkfY83.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 216276870,
+                  "file_name": "HouseholdItems_HZS1456_01",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/V9SCBEVBJAGJU-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAIItVAAe-OAJnKHc020.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          }
+        ]
+      },
+      {
+        "position": 7,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/BW9J68-ce896fa-1-29-7-500-b6f0723226bb5c5850442a5f6b09700f.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/BW9J68-7-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-eb4183df2f5e5a0b132358fb966e67dc.png",
+        "texture": "",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                166.66666666666666,
+                -128.33333333333334
+              ],
+              "p2": [
+                166.66666666666666,
+                553.3333333333334
+              ],
+              "p3": [
+                848.3333333333334,
+                553.3333333333334
+              ],
+              "p4": [
+                848.3333333333334,
+                -128.33333333333334
+              ]
+            },
+            "detail_3d": {
+              "model_id": 8835,
+              "left": 100,
+              "top": -77,
+              "width": 409,
+              "height": 409,
+              "position": {
+                "x": 0.5915100379182885,
+                "y": 0.7422331303866099,
+                "z": -9.0858508220417
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417
+                },
+                "mainPointIntensity": "1.39",
+                "ambientLightIntensity": "0.89",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.59151003791829,
+                  "y": 0.74223313038661,
+                  "z": -9.0858508220417,
+                  "isVector3": true
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": 0.087945904272687,
+                  "y": -0.069984093771708,
+                  "z": 0.005136103167019499
+                },
+                "zoom": "6",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "-9.5",
+                      "y": "-6.5",
+                      "z": "-3.5"
+                    },
+                    "intensity": "1.4",
+                    "decay": 0,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 15605,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 2000,
+                  "height": 2000,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 33.33,
+                    "top": 33.33,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 33.33,
+                    "minY": 33.33,
+                    "centerX": 1003.33,
+                    "centerY": 1003.33,
+                    "visible": true
+                  }
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_HZS1456_A_scale100&100_custom",
+                  "face_list": [
+                    {
+                      "id": 15605,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 2000,
+                      "height": 2000,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/3724-ebb08839e4b269916b65470e481a1e35-pure-2fce99052025218cf1fe449b1698c330.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 33.33,
+                        "top": 33.33,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 33.33,
+                        "minY": 33.33,
+                        "centerX": 1003.33,
+                        "centerY": 1003.33,
+                        "visible": true
+                      }
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/MWPE4UO3BQ5GJ-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 216276863,
+                  "file_name": "ClothingAccessories_YJ1806_01_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GTGYF4R7UC8T4-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5q6AfKpvAAzlRD9CnO8812.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 216276868,
+                  "file_name": "HouseholdItems_HZS1456_01_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/TSAFMF9TLK45W-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAf4VGAByupN14evM457.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 216276869,
+                  "file_name": "HouseholdItems_HZS1456_01_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/GHD5NRRO6OW5T-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/C8/wKgEPGey5peAW9r-AAACEezLkfY83.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 216276870,
+                  "file_name": "HouseholdItems_HZS1456_01",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/V9SCBEVBJAGJU-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group8/M00/D3/CE/wKgEPWey5rCAIItVAAe-OAJnKHc020.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

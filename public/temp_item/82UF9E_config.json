@@ -1,0 +1,238 @@
+[
+  {
+    "color": {
+      "id": 29,
+      "name": "黑色",
+      "en_name": "Black",
+      "hex": "#000000"
+    },
+    "views": [
+      {
+        "position": 1,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/82UF9E-1acb8d2-1-29-1-500-e6efca1783a9146fe4ad75a1ada73da5.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/82UF9E-1-29-150-698d51a19d8a121ce581499d7b701668d6b98367cb1066fe7e631ed2b8928f6d-1-816ce922cf7921af276e70bf452cafd1.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/82UF9E-1acb67f-1-29-1-500-8202a18d1e692aad10782a66e61a5e79.png",
+        "master": 1,
+        "use_view_id": 1,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                -28.0,
+                17.0
+              ],
+              "p2": [
+                -29.0,
+                604.0
+              ],
+              "p3": [
+                153.97049999999996,
+                603.0
+              ],
+              "p4": [
+                151.97049999999996,
+                16.0
+              ]
+            }
+          },
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                135.0,
+                15.0
+              ],
+              "p2": [
+                133.0,
+                604.0
+              ],
+              "p3": [
+                314.97049999999996,
+                604.0
+              ],
+              "p4": [
+                315.97049999999996,
+                15.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/82UF9E-1accab5-1-29-2-500-5129a66b9dfec2a4430ad218df4d9968.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/82UF9E-2-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-efc699e4df788e19a15ae7cc58953ef2.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/82UF9E-1acc9be-1-29-2-500-2834c239401ff408c4137fa863a74156.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                18.0,
+                7.0
+              ],
+              "p2": [
+                19.0,
+                421.0
+              ],
+              "p3": [
+                147.97049999999996,
+                423.0
+              ],
+              "p4": [
+                146.97049999999996,
+                7.0
+              ]
+            }
+          },
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                -98.0,
+                8.0
+              ],
+              "p2": [
+                -96.0,
+                423.0
+              ],
+              "p3": [
+                29.97049999999996,
+                423.0
+              ],
+              "p4": [
+                30.97049999999996,
+                6.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 3,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/82UF9E-1acd24b-1-29-3-500-d5b376db932dea6bea5101374655a941.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/82UF9E-3-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-34866f5d4472c40b74238ba083dd4202.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/82UF9E-1acd160-1-29-3-500-739941c502e4af8c1066a9e779ad8af2.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                82.0,
+                -7.0
+              ],
+              "p2": [
+                83.0,
+                582.0
+              ],
+              "p3": [
+                263.97049999999996,
+                581.0
+              ],
+              "p4": [
+                262.97049999999996,
+                -7.0
+              ]
+            }
+          },
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                -84.0,
+                -8.0
+              ],
+              "p2": [
+                -83.0,
+                584.0
+              ],
+              "p3": [
+                98.97049999999996,
+                584.0
+              ],
+              "p4": [
+                96.97049999999996,
+                -5.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 4,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/82UF9E-1acd2dc-1-29-4-500-3e63a0cece0b373eef24d8738d425938.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/82UF9E-4-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-c09de642cc3ad2def5562577318be1b8.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/82UF9E-1b1064c-1-29-4-500-62ad38e09aff68bb041d6ace86858131.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                -71.99999999999994,
+                122.0
+              ],
+              "p2": [
+                1033.0,
+                1374.0
+              ],
+              "p3": [
+                1651.9705,
+                702.0
+              ],
+              "p4": [
+                658.9704999999999,
+                -336.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 5,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/82UF9E-1acd2ef-1-29-5-500-a55233e4c64fd30b30d2761f16acb584.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/82UF9E-5-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-9d068130729c544d243dc97ef5ff3320.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/82UF9E-1acd2e9-1-29-5-500-255c7c4d0073d2b2598c0adc4b4f70a5.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                0.0,
+                0.0
+              ],
+              "p2": [
+                0.0,
+                600.0
+              ],
+              "p3": [
+                185.97049999999996,
+                600.0
+              ],
+              "p4": [
+                185.97049999999996,
+                0.0
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

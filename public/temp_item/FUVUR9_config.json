@@ -1,0 +1,392 @@
+[
+  {
+    "color": {
+      "id": 29,
+      "name": "黑色",
+      "en_name": "Black",
+      "hex": "#000000"
+    },
+    "views": [
+      {
+        "position": 1,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1aab84c-1-29-1-500-d9971321be0d77e2bd411b8ea231dd48.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-1-29-150-698d51a19d8a121ce581499d7b70166878af1011bc8cb11e3268e116308b0448-1-5d9222a895313f071d6b56a60cc297f3.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac932c-1-29-1-500-9492a6a399b2bf868a82cde14f5daaab.png",
+        "master": 1,
+        "use_view_id": 1,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                -12.0,
+                7.0
+              ],
+              "p2": [
+                -12.0,
+                419.0
+              ],
+              "p3": [
+                229.87799999999996,
+                419.0
+              ],
+              "p4": [
+                230.87799999999996,
+                7.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 2,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac0ebd-1-29-2-500-6216dabb151452e77942fa3963343583.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-2-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-71e4331109330461f2297ea4b8de7b19.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac0ec9-1-29-2-500-578c9ac25c045589ab2762924329c371.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                54.0,
+                180.0
+              ],
+              "p2": [
+                61.0,
+                460.0
+              ],
+              "p3": [
+                235.87799999999996,
+                479.0
+              ],
+              "p4": [
+                222.87799999999996,
+                148.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 3,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac8f33-1-29-3-500-f6a2425f02801297bfbb72bf3d868095.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-3-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-80d0e3db8edecdf71bd79860e09405f1.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac5526-1-29-3-500-8f940f4bfd95d363e89dbebd143beff5.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                3.0,
+                -3.0
+              ],
+              "p2": [
+                3.0,
+                581.0
+              ],
+              "p3": [
+                348.87799999999993,
+                580.0
+              ],
+              "p4": [
+                346.87799999999993,
+                0.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 6,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac8f52-1-29-6-500-98b3d9e5134fc40d33d6ee1eee2fb0e2.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-6-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-6dfd60db3e917be6ef1d68533bc65a73.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac8f61-1-29-6-500-62eb4f53f1181a42d7c256354e2c65a3.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                56.0,
+                15.0
+              ],
+              "p2": [
+                56.0,
+                594.0
+              ],
+              "p3": [
+                397.87799999999993,
+                594.0
+              ],
+              "p4": [
+                397.87799999999993,
+                13.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 4,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac5141-1-29-4-500-12b8eacb92b732c8e858b94808a56cea.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-4-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-3aa159c55b82954b10cddc1a5ff54bf5.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1b10632-1-29-4-500-020fd3b013734851ccfe99727386fb68.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                -107.99999999999986,
+                120.0
+              ],
+              "p2": [
+                1474.0000000000002,
+                1744.0
+              ],
+              "p3": [
+                2244.8779999999997,
+                1004.0
+              ],
+              "p4": [
+                925.8779999999998,
+                -498.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 5,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-1ac65cb-1-29-5-500-44bccdbcb6ef7c88968cc9ee8645f6e6.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-5-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-e8e040882ba79d97c040a6fde770f66f.png",
+        "texture": "https://nimg5.hicustom.com/static/productTypeDetTexture/FUVUR9-1ac65a0-1-29-5-500-6c00d0ae736c47b1e42631f494b035ca.png",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 0,
+            "target_view_id": 1,
+            "distort_params": {
+              "p1": [
+                0.0,
+                0.0
+              ],
+              "p2": [
+                0.0,
+                600.0
+              ],
+              "p3": [
+                352.87799999999993,
+                600.0
+              ],
+              "p4": [
+                352.87799999999993,
+                0.0
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "position": 7,
+        "base_image": "https://nimg5.hicustom.com/static/productTypeDetBottom/FUVUR9-71fa32b-1-29-7-500-cf9e041d60df804037fdc2b27046e0f9.png",
+        "effect_image": "https://nimg5.hicustom.com/static/productTypeEffectImg/FUVUR9-7-29-150-698d51a19d8a121ce581499d7b70166899914b932bd37a50b983c5e7c90ae93b-1-e7e6c1977093f833a1abce9548d930e6.png",
+        "texture": "",
+        "master": 0,
+        "use_view_id": 0,
+        "parts": [
+          {
+            "type": 2,
+            "target_view_id": 0,
+            "distort_params": {
+              "p1": [
+                -1.0,
+                3.0
+              ],
+              "p2": [
+                -1.0,
+                593.0
+              ],
+              "p3": [
+                589.0,
+                593.0
+              ],
+              "p4": [
+                589.0,
+                3.0
+              ]
+            },
+            "detail_3d": {
+              "model_id": 3882,
+              "left": -1,
+              "top": 3,
+              "width": 590,
+              "height": 590,
+              "position": {
+                "x": -0.31411771742043054,
+                "y": 0.727495303921381,
+                "z": -12.402119796056002
+              },
+              "render_params": {
+                "newLightModel": true,
+                "mainPointType": "direct",
+                "mainPointPosition": {
+                  "x": -0.31411771742043,
+                  "y": 0.72749530392138,
+                  "z": -12.402119796056
+                },
+                "mainPointIntensity": "2.26",
+                "ambientLightIntensity": "0.97",
+                "aroundPointIntensity": 0,
+                "position": {
+                  "x": 0.26297365517626,
+                  "y": 0.73029442144776,
+                  "z": -4.3869118935261
+                },
+                "allowAlpha": -1,
+                "useSourceModel": false,
+                "rotation": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0
+                },
+                "zoom": "3",
+                "lights": [
+                  {
+                    "position": {
+                      "x": "15",
+                      "y": "8",
+                      "z": "7"
+                    },
+                    "intensity": "0.8",
+                    "decay": 4,
+                    "distance": 100,
+                    "closed": false,
+                    "color": "#fff",
+                    "ifShowColorPanel": false
+                  }
+                ]
+              },
+              "face_list": [
+                {
+                  "id": 5789,
+                  "name": "A面",
+                  "custom_name": "",
+                  "width": 1200,
+                  "height": 1200,
+                  "view_id": 1,
+                  "url": "https://nimg5.hicustom.com/static/completePrintArea/1040-e60819a03616d11fcc8080ba66a388e6-pure-14d4517c29b6a1eaade5aa3b89a2b438.png",
+                  "params": {
+                    "angle": 0,
+                    "flipX": false,
+                    "flipY": false,
+                    "left": 20,
+                    "top": 20,
+                    "scaleX": 0.97,
+                    "scaleY": 0.97,
+                    "minX": 20,
+                    "minY": 20,
+                    "centerX": 600.2,
+                    "centerY": 600.2,
+                    "visible": true
+                  },
+                  "3d_show_params": "{\"x\":\"-0.06213688053356515\",\"y\":\"0.5265487240043968\",\"z\":\"-4.423388576216449\"}"
+                }
+              ],
+              "uv_list": [
+                {
+                  "name": "HouseholdItems_M1486_01_scale50&50_custom",
+                  "face_list": [
+                    {
+                      "id": 5789,
+                      "name": "A面",
+                      "custom_name": "",
+                      "width": 1200,
+                      "height": 1200,
+                      "view_id": 1,
+                      "url": "https://nimg5.hicustom.com/static/completePrintArea/1040-e60819a03616d11fcc8080ba66a388e6-pure-14d4517c29b6a1eaade5aa3b89a2b438.png",
+                      "params": {
+                        "angle": 0,
+                        "flipX": false,
+                        "flipY": false,
+                        "left": 20,
+                        "top": 20,
+                        "scaleX": 0.97,
+                        "scaleY": 0.97,
+                        "minX": 20,
+                        "minY": 20,
+                        "centerX": 600.2,
+                        "centerY": 600.2,
+                        "visible": true
+                      },
+                      "3d_show_params": "{\"x\":\"-0.06213688053356515\",\"y\":\"0.5265487240043968\",\"z\":\"-4.423388576216449\"}"
+                    }
+                  ],
+                  "design_color_custom_base": {
+                    "design_color_url": "https://nimg5.hicustom.com/static/threeDimensionFile/7ULMEMOMXYGHC-design_color.png",
+                    "design_color_code": [
+                      "0",
+                      "0",
+                      "0"
+                    ],
+                    "design_color_type": 1
+                  }
+                }
+              ],
+              "zipfiles": [
+                {
+                  "file_id": 119513651,
+                  "file_name": "HouseholdItems_M1486_00_O",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/VFTS2H3PEX2OD-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group9/M00/3D/98/wKgEP2G8CKaAKwZ3AACzgQV41oE105.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 119513653,
+                  "file_name": "HouseholdItems_M1486_A_N",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/LGE3YWD9C75VK-3dSources.png",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group9/M00/3D/98/wKgEP2G8CKaAADv2AANLbg-OytQ497.png",
+                  "ext": "png"
+                },
+                {
+                  "file_id": 119513660,
+                  "file_name": "HouseholdItems_M1486_3D_source",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/2DJU6BA524GY2-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group9/M00/3D/98/wKgEP2G8CKiAEL1VAByq-MECoqI952.glb",
+                  "ext": "glb"
+                },
+                {
+                  "file_id": 119513661,
+                  "file_name": "HouseholdItems_M1486_3D_data",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/SWMIBFLLZIM2E-3dSources.json",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group9/M00/3D/98/wKgEPmG8CKiAf_10AAADCndFLTQ57.json",
+                  "ext": "json"
+                },
+                {
+                  "file_id": 119513662,
+                  "file_name": "HouseholdItems_M1486_3D",
+                  "file_url": "https://nimg5.hicustom.com/static/threeDimensionFile/E3CYGVMT5OZH2-3dSources.glb",
+                  "file_source_url": "https://imagefs.zhiwendiy.com/group9/M00/3D/98/wKgEP2G8CKiAKkG3AAeQ9DO_5mA052.glb",
+                  "ext": "glb"
+                }
+              ],
+              "enable_hdr": -1
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
